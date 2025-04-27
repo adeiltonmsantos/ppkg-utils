@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Basic&family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
+
+    <title>Gerar Despacho - Exame com Erros Elevados</title>
+    <style>
+        html,
+        body {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            font-family: DM Serif Text;
+        }
+
+        body {
+            background: blue;
+        }
+
+        .grid-page-content {
+            display: grid;
+            grid-template-rows: repeat(20, 1fr);
+            height: 100%;
+        }
+
+        header {
+            grid-row-start: 1;
+            grid-row-end: 3;
+        }
+        
+        header>div {
+            display: flex;
+            font-size: 25px;
+        }
+        
+        main {
+            grid-row-start: 3;
+            grid-row-end: 19;
+            background: rgb(146, 209, 250);
+        }
+        
+        footer {
+            grid-row-start: 19;
+            grid-row-end: 21;
+        }
+        
+        header, footer {
+            display: flex;
+            background: rgb(4, 4, 22);
+            color: white;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
