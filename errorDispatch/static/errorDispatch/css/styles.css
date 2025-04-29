@@ -1,0 +1,62 @@
+/* Estilos Gerais  */
+
+html,
+body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    font-family: DM Serif Text;
+}
+
+body {
+    background: blue;
+}
+
+.grid-page-content {
+    display: grid;
+    grid-template-rows: repeat(20, 1fr);
+    height: 100%;
+}
+
+header {
+    grid-row-start: 1;
+    grid-row-end: 3;
+}
+
+header>div {
+    display: flex;
+    font-size: 25px;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-row-start: 3;
+    grid-row-end: 19;
+    background: rgb(146, 209, 250);
+}
+
+footer {
+    grid-row-start: 19;
+    grid-row-end: 21;
+}
+
+header, footer {
+    display: flex;
+    background: rgb(4, 4, 22);
+    color: white;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilos formulários */
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: blue;
+    margin: 20px auto;
+}

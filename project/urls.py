@@ -18,5 +18,5 @@ Including another URLconf
 from django.urls import include, path  # type: ignore
 
 urlpatterns = [
-    path('despacho/', include('errorDispatch.urls')),
+    path('ppgk-utils/', include('errorDispatch.urls')),
 ]
