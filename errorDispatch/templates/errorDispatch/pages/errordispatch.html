@@ -4,19 +4,29 @@
     <div class="grid-page-content">
         {% include "errorDispatch/partials/header.html" %}
             <main>
-                
-                <div class="form-container">
-                    <div class="form-footer">
-                        Enviar laudo(s)
+                <form action="">
+                    <div class="form-main-container">
+                        <div class="form-container">
+                            <div class="form-header">
+                                <i class="fa-regular fa-file"></i>
+                                DESPACHO - LAUDO(S) COM ERROS ELEVADOS
+                            </div>
+                            <div class="form-body">
+                                <h1>
+                                    <i class="fa-solid fa-folder-open"></i>
+                                    Upload de laudo(s)
+                                </h1>
+                                <div class="form-field">
+                                    <input type="file" multiple accept="application/pdf" name="" id="">
+                                </div>
+                            </div>
+                            <div class="form-footer">
+                                <button type="submit" class="form-button">ENVIAR</button>
+                                <button type="reset" class="form-button">CANCELAR</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-main">
-                        Aqui vai o form
-                    </div>
-                    <div class="form-footer">
-                        Aqui vão os botões
-                    </div>
-                </div>
-
+                </form>
             </main>
         {% include "errorDispatch/partials/footer.html" %}
     </div>

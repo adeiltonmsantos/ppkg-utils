@@ -1,4 +1,15 @@
+/* Variáveis */
+:root {
+    --padding-thin: 0.5rem;
+    --padding-medium: 1rem;
+    --padding-large: 2rem;
+}
+
 /* Estilos Gerais  */
+
+html {
+    font-size: 62.5%;
+}
 
 html,
 body {
@@ -9,7 +20,7 @@ body {
 }
 
 body {
-    background: blue;
+    background: rgb(216, 229, 255);
 }
 
 .grid-page-content {
@@ -34,7 +45,6 @@ main {
     align-items: center;
     grid-row-start: 3;
     grid-row-end: 19;
-    background: rgb(146, 209, 250);
 }
 
 footer {
@@ -50,13 +60,71 @@ header, footer {
     align-items: center;
 }
 
-/* Estilos formulários */
+/* Estilos dos formulários */
 
+/* Contêiner principal para o form */
+.form-main-container {
+    display: flex;
+    width: 40rem;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    font-size: 1.4rem;
+    box-shadow: -0.5rem 0.5rem 1rem gray;
+    border-radius: 0.5rem;
+}
+
+/* Contêiner para as 3 partes do form: header, body e footer */
 .form-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: blue;
-    margin: 20px auto;
+    border-radius: 0.5rem 0.5rem;
+    padding: 0 0.5rem 0 0.5rem;
+}
+
+.form-header {
+    border-radius: 0.5rem 0.5rem 0 0;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.form-body {
+    flex-direction: column;
+    padding: 0.5rem 0.5rem 1rem 0.5rem;
+    background: #ffffff;
+    width: 100%;
+}
+
+.form-body h1 {
+    font-size: 1.4rem;
+}
+
+.form-footer {
+    border-radius: 0 0 0.5rem 0.5rem;
+    gap: 2rem;
+}
+
+.form-header, .form-footer {
+    color: #ffffff;
+    width: 100%;
+    background-color: rgb(4, 4, 22);
+    padding: 1rem 0.5rem;
+}
+
+.form-header, .form-body, .form-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-button {
+    background: rgb(112, 112, 112);
+    color: #ffffff;
+    font-weight: bold;
+    padding: 0 2rem 0 2rem;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    font-size: 1.3rem;
 }
