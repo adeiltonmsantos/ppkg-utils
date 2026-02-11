@@ -1,0 +1,43 @@
+:root{
+    --header-footer-height: 13rem;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body{
+    font-size: 1.6rem;
+    font-family: 'Jomhuria', serif;
+    font-weight: normal;
+    background-color: #EAEAEA;
+}
+
+.header{
+    background-color: #07053A;
+    height: var(--header-footer-height);
+    display: flex;
+    padding: 1rem 3.5rem;
+}
+
+.header img{
+    height: 11rem;
+}
+
+.header-logo-tit{
+    display: flex;
+    gap: 1.7rem;
+    align-items: center;
+}
+
+.header-logo-tit h1{
+    font-size: 8rem;
+    font-weight: normal;
+    color: #fff;
+}
