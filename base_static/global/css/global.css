@@ -1,5 +1,7 @@
 :root{
     --header-footer-height: 13rem;
+    --font-body: 'DM Serif Text';
+    --font-title: 'Vina Sans';
 }
 
 * {
@@ -14,7 +16,7 @@ html {
 
 body{
     font-size: 1.6rem;
-    font-family: 'Jomhuria', serif;
+    font-family: var(--font-body), sans-serif;
     font-weight: normal;
     background-color: #EAEAEA;
 }
@@ -42,6 +44,7 @@ body{
     font-size: 8rem;
     font-weight: normal;
     color: #fff;
+    font-family: var(--font-title);
 }
 
 /* Main container */

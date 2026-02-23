@@ -36,3 +36,11 @@ class IpemDataRegisterForm(forms.Form):
             'class': 'form-text-input'
         })
     )
+
+    img_uf = forms.FileField(
+        label='Imagem do brasão do estado'
+    )
+
+    img_conv = forms.FileField(
+        label='Imagem do convênio INMETRO/IPEM'
+    )
