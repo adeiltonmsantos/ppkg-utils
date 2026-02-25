@@ -2,6 +2,8 @@
     --header-footer-height: 13rem;
     --font-body: 'DM Serif Text';
     --font-title: 'Vina Sans';
+
+    --bg-color-btn: #07053A;
 }
 
 * {
@@ -19,6 +21,7 @@ body{
     font-family: var(--font-body), sans-serif;
     font-weight: normal;
     background-color: #EAEAEA;
+    color: #07053A;
 }
 
 
@@ -60,15 +63,56 @@ body{
 
 /* Common forms and inputs */
 .form-container{
-    max-width: 80rem;
     display: flex;
     flex-direction: column;
     gap: 3rem;
     padding: 2.5rem;
     border: 1px solid #000;
-    /* box-shadow: ; */
+    box-shadow: 5px 5px 4px #0000007a;
+}
+
+.form-container h2{
+    text-align: center;
+}
+
+.fields-container{
+    max-width: 75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(37rem, 100%), 1fr));
+    gap: 3rem 1rem;
 }
 
 .form-field{
-    max-width: 37rem;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-text-input,
+.form-file-input{
+    height: 3.9rem;
+    padding: 1rem;
+    border: none;
+    border-radius: 0.8rem;
+    background-color: #fff;
+}
+
+.form-btn{
+    background-color: var(--bg-color-btn);
+    width: 15.4rem;
+    height: 2.9rem;
+    color: #fff;
+    border: none;
+    border-radius: 1rem;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.form-controls{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1.5rem 0;
+    margin: 2rem 0 0;
 }

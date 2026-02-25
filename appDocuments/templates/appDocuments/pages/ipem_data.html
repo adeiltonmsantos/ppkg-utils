@@ -5,9 +5,10 @@
 <div class="form-container">
     <h2>DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS</h2>
     <form action="" method="post">
+        <div class="fields-container">
         {% for field in form %}
             <div class="form-field">
-                {{ field.label_tag }}<br>
+                {{ field.label_tag }}
                 {{ field }}
                 {% if field.errors %}
                     <div class="error-messages">
@@ -16,6 +17,11 @@
                 {% endif %}
             </div>
         {% endfor %}
+        </div>
+        <div class="form-controls">
+            <button type="submit" class="form-btn">Salvar</button>
+            <button type="reset" class="form-btn">Cancelar</button>
+        </div>
     </form>
 </div>
 {% endblock content %}
