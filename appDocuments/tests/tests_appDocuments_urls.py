@@ -8,8 +8,7 @@ class appDocumentsUrlTest(SimpleTestCase):
         url_wanted = '/documents/home/'
         self.assertEqual(url, url_wanted)
 
-    def test_appDocuments_iepm_data_url_is_correct(self):
+    def test_appDocuments_ipem_data_url_is_correct(self):
         url = reverse('appDocuments:ipem-data')
         url_wanted = '/documents/ipem_data/'
         self.assertEqual(url, url_wanted)
-
