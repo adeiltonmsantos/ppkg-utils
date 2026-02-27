@@ -7,8 +7,16 @@ def home(request):
     ...
 
 
-def ipemData(request):
-    form = IpemDataRegisterForm()
+def ipemData_receive(request):
+    ...
+
+
+def ipemData_send(request):
+    POST = None
+    if request.POST:
+        POST = request.POST
+
+    form = IpemDataRegisterForm(POST)
     return render(request,
                   'appDocuments/pages/ipem_data.html',
                   context={'form': form}

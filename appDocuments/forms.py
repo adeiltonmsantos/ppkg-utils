@@ -9,11 +9,6 @@ class IpemDataRegisterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        add_error_message_to_field(
-            self.fields['uf_ipem'],
-            'required',
-            'O "Estado" do IPEM é obrigatório'
-        )
 
     uf_ipem = forms.CharField(
         label='Estado do IPEM',
@@ -34,17 +29,20 @@ class IpemDataRegisterForm(forms.Form):
             'class': 'form-text-input'
         }),
         error_messages={
-            'required': 'O campo "Estado do IPEM" é obrigatório'
+            'required': 'A "Secretaria" ao qual o IPEM é vinculado é obrigatória'  # noqa: E501
         }
     )
 
-    name_ipem = forms.CharField(
-        label='Nome do IPEM',
+    rs_ipem = forms.CharField(
+        label='Razão Social do IPEM',
         required=True,
         widget=forms.TextInput(attrs={
             'placeholder': 'Ex.: Inst. de Metrologia e Qualidade de Alagoas',
             'class': 'form-text-input'
-        })
+        }),
+        error_messages={
+            'required': 'A "Razão Social" do IPEM é obrigatória'
+        }
     )
 
     name_ppkg_ipem = forms.CharField(
@@ -53,7 +51,10 @@ class IpemDataRegisterForm(forms.Form):
         widget=forms.TextInput(attrs={
             'placeholder': 'Ex.: Divisão de Pré-Embalados',
             'class': 'form-text-input'
-        })
+        }),
+        error_messages={
+            'required': 'A "Nome" do setor de Pré-Embalados é obrigatório'
+        }
     )
 
     img_uf = forms.FileField(
