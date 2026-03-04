@@ -10,13 +10,39 @@ class IpemDataRegisterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    uf_ipem = forms.CharField(
+    uf_choices = {
+        'AC': 'Acre',
+        'AL': 'Alagoas',
+        'AP': 'Amapá',
+        'AM': 'Amazonas',
+        'BA': 'Bahia',
+        'CE': 'Ceará',
+        'DF': 'Distrito Federal',
+        'ES': 'Espirito Santo',
+        'GO': 'Goiás',
+        'MA': 'Maranhão',
+        'MS': 'Mato Grosso do Sul',
+        'MT': 'Mato Grosso',
+        'MG': 'Minas Gerais',
+        'PA': 'Pará',
+        'PB': 'Paraíba',
+        'PR': 'Paraná',
+        'PE': 'Pernambuco',
+        'PI': 'Piauí',
+        'RJ': 'Rio de Janeiro',
+        'RN': 'Rio Grande do Norte',
+        'RS': 'Rio Grande do Sul',
+        'RO': 'Rondônia',
+        'RR': 'Roraima',
+        'SC': 'Santa Catarina',
+        'SP': 'São Paulo',
+        'SE': 'Sergipe',
+        'TO': 'Tocantins'
+    }
+
+    uf_ipem = forms.ChoiceField(
         label='Estado do IPEM',
-        required=True,
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Ex.: Alagoas, Bahia, Ceará, ...',
-            'class': 'form-text-input'
-        }),
+        choices={' ': 'Selecione um estado', **uf_choices},
         error_messages={
             'required': 'O campo "Estado do IPEM" é obrigatório'
         }
@@ -35,7 +61,6 @@ class IpemDataRegisterForm(forms.Form):
 
     rs_ipem = forms.CharField(
         label='Razão Social do IPEM',
-        required=True,
         widget=forms.TextInput(attrs={
             'placeholder': 'Ex.: Inst. de Metrologia e Qualidade de Alagoas',
             'class': 'form-text-input'
@@ -47,7 +72,6 @@ class IpemDataRegisterForm(forms.Form):
 
     name_ppkg_ipem = forms.CharField(
         label='Nome do setor de Pré-Embalados',
-        required=True,
         widget=forms.TextInput(attrs={
             'placeholder': 'Ex.: Divisão de Pré-Embalados',
             'class': 'form-text-input'

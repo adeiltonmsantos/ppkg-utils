@@ -4,7 +4,7 @@
 {% csrf_token %}
 <div class="form-container">
     <h2>DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS</h2>
-    <form action="" method="post" enctype="multipart/form-data">
+    <form action="{% url "appDocuments:ipem-data-receive" %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="fields-container">
         {% for field in form %}
