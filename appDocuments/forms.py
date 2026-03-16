@@ -82,6 +82,7 @@ class IpemDataRegisterForm(forms.Form):
     )
 
     img_uf = forms.FileField(
+        required=False,
         label='Imagem do brasão do estado',
         widget=forms.FileInput(attrs={
             'class': 'form-file-input',
@@ -90,6 +91,7 @@ class IpemDataRegisterForm(forms.Form):
     )
 
     img_conv = forms.FileField(
+        required=False,
         label='Imagem do convênio INMETRO/IPEM',
         widget=forms.FileInput(attrs={
             'class': 'form-file-input',
