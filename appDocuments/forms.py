@@ -1,8 +1,17 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 
 def add_error_message_to_field(field, error_type, error_message):
     field.error_messages[error_type] = error_message
+
+
+def validate_file_size(value):
+    filesize = value.size
+    # 3MB em bytes
+    if filesize > 3 * 1024 * 1024:
+        raise ValidationError("A imagem não pode ser maior que 3MB.")
+    return value
 
 
 class IpemDataRegisterForm(forms.Form):
@@ -87,7 +96,8 @@ class IpemDataRegisterForm(forms.Form):
         widget=forms.FileInput(attrs={
             'class': 'form-file-input',
             'accept': 'image/*'
-        })
+        }),
+        validators=[validate_file_size]
     )
 
     img_conv = forms.FileField(
@@ -96,5 +106,6 @@ class IpemDataRegisterForm(forms.Form):
         widget=forms.FileInput(attrs={
             'class': 'form-file-input',
             'accept': 'image/*'
-        })
+        }),
+        validators=[validate_file_size]
     )

@@ -5,6 +5,7 @@ from pathlib import Path
 from django.conf import settings
 
 # import os
+from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.http import Http404
 from django.shortcuts import (
@@ -22,17 +23,27 @@ def home(request):
 
 
 def ipemData_receive(request):
-    def changeExtensionImage(ImgObj):
+    def saveImageAsPng(ImgObj, ImgName):
         # Extraindo nomes e extensões dos arquivos
         ImgObj_aux = Path(ImgObj.name)
         ImgObj_ext = ImgObj_aux.suffix.lower()
 
+        # Arquivo não é PNG. Convertendo e inserindo o conteúdo no buffer...
         if ImgObj_ext != '.png':
             img = Image.open(ImgObj)
+            # Criando um buffer para armazenar o arquivo em memória
             buffer = io.BytesIO()
-            ImgObj = img.save(buffer, format='PNG')
+            img.save(buffer, format='PNG')
+            img_content = ContentFile(buffer.getvalue())
 
-        return ImgObj
+        # Arquivo é PNG. Gerando apenas o conteúdo para inserir no buffer...
+        else:
+            img_content = ImgObj
+        img_name = f'{ImgName}.png'
+
+        # Salvando o arquivo...
+        fs = FileSystemStorage()
+        fs.save(img_name, img_content)
 
     if not request.POST:
         raise Http404()
@@ -63,23 +74,21 @@ def ipemData_receive(request):
         except Exception as e:
             print('Erro encontrado: ', e)
 
-        # Obtendo as imagens como objetos em PNG
-        brasao = changeExtensionImage(request.FILES['img_uf'])
-        convenio = changeExtensionImage(request.FILES['img_conv'])
+        # Obtendo as imagens como objetos e inserindo em lista
+        imgs = [
+            {'name': 'brasao', 'file': request.FILES['img_uf']},
+            {'name': 'convenio', 'file': request.FILES['img_conv']},
+        ]
 
         fs = FileSystemStorage()
 
-        # Lista com nomes das imagens
-        imgs = ['brasao.png', 'convenio.png']
-
         for img in imgs:
             # Apagando arquivos pré-existentes
-            if fs.exists(img):
-                fs.delete(img)
+            if fs.exists(f"{img['name']}.png"):
+                fs.delete(f"{img['name']}.png")
 
-        # Salvando imagens na pasta 'media'
-        fs.save('brasao.png', brasao)
-        fs.save('convenio.png', convenio)
+            # Salvando arquivo como PNG
+            saveImageAsPng(img['file'], img['name'])
 
         form = IpemDataRegisterForm()
         return render(
