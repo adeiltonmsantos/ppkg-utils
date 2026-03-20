@@ -8,7 +8,7 @@ class appDocumentsViewsTest(SimpleTestCase):
 
     def test_appDocuments_ipem_data_view_is_correct(self):
         view = resolve(reverse('appDocuments:ipem-data-send'))
-        self.assertIs(view.func, views.ipemData)
+        self.assertIs(view.func, views.ipemData_send)
 
     def test_appDocuments_ipem_data_template_is_correct(self):
         response = self.client.get(reverse('appDocuments:ipem-data-send'))

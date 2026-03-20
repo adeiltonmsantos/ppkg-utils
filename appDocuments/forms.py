@@ -14,6 +14,18 @@ def validate_file_size(value):
     return value
 
 
+def validate_uf_field(value):
+    if value == ' ':
+        raise ValidationError('Selecione um estado')
+
+
+def validate_size_characters(num_chars, field_label):
+    def effective_validator(value):
+        if len(str(value).strip()) < num_chars:
+            raise ValidationError(
+                f'O campo "{field_label}" não pode ter menos de {num_chars} caracteres')  # noqa: E501
+
+
 class IpemDataRegisterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
@@ -54,7 +66,8 @@ class IpemDataRegisterForm(forms.Form):
         choices={' ': 'Selecione um estado', **uf_choices},
         error_messages={
             'required': 'O campo "Estado do IPEM" é obrigatório'
-        }
+        },
+        validators=[validate_uf_field]
     )
 
     sec_ipem = forms.CharField(

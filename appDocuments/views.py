@@ -65,7 +65,7 @@ def ipemData_receive(request):
             'name_ppkg_ipem': cleaned_data['name_ppkg_ipem'],
         }
 
-        # Salvando o JSON na pasta do app
+        # URL onde o JSON deve ser salvo
         url_json = settings.BASE_DIR / 'appDocuments/ipem-data.json'
 
         # Tentando salvar o JSON
@@ -77,8 +77,8 @@ def ipemData_receive(request):
 
         # Obtendo as imagens como objetos e inserindo em lista
         imgs = [
-            {'name': 'brasao', 'file': request.FILES['img_uf']},
-            {'name': 'convenio', 'file': request.FILES['img_conv']},
+            {'name': 'brasao', 'file': request.FILES.get('img_uf', None)},
+            {'name': 'convenio', 'file': request.FILES.get('img_conv', None)},
         ]
 
         fs = FileSystemStorage()
@@ -88,8 +88,10 @@ def ipemData_receive(request):
             if fs.exists(f"{img['name']}.png"):
                 fs.delete(f"{img['name']}.png")
 
-            # Salvando arquivo como PNG
-            saveImageAsPng(img['file'], img['name'])
+            # Salvando novos arquivos, se foram enviados
+            if img['file'] is not None:
+                # Salvando arquivo como PNG
+                saveImageAsPng(img['file'], img['name'])
 
         form = IpemDataRegisterForm()
 

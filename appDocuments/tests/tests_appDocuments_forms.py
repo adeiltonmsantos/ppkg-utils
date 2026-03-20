@@ -6,7 +6,6 @@ from appDocuments.forms import IpemDataRegisterForm
 
 class AppDocumentsTestForm(SimpleTestCase):
     @parameterized.expand([
-        ('uf_ipem', 'Ex.: Alagoas, Bahia, Ceará, ...'),
         ('sec_ipem', 'Ex.: Secretaria de Estado de Ind. e Comércio'),
         ('rs_ipem', 'Ex.: Inst. de Metrologia e Qualidade de Alagoas'),
         ('name_ppkg_ipem', 'Ex.: Divisão de Pré-Embalados'),
@@ -34,3 +33,19 @@ class AppDocumentsTestForm(SimpleTestCase):
             error_msg,
             msg=f'Wanted {error_msg} but found {current_error_msg}'
         )
+
+
+class AppDocumentsIntegrationTestForm(SimpleTestCase):
+    def setUp(self):
+        self.form_data = {
+            'uf_ipem': 'Alagoas',
+            'sec_ipem': 'Secretaria',
+            'rs_ipem': 'Instituto',
+            'name_ppkg_ipem': 'Divisão',
+        }
+        return super().setUp()
+
+    def test_uf_field_must_be_selected(self):
+        self.form_data['uf_ipem'] = ' '
+        form = IpemDataRegisterForm(self.form_data)
+        url = ''
