@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 from django.conf import settings
+from django.contrib import messages
 
 # import os
 from django.core.files.base import ContentFile
@@ -91,6 +92,9 @@ def ipemData_receive(request):
             saveImageAsPng(img['file'], img['name'])
 
         form = IpemDataRegisterForm()
+
+        messages.success(request, 'Dados salvos com sucesso!')
+
         return render(
             request,
             'appDocuments/pages/ipem_data.html',

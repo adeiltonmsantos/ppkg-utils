@@ -2,6 +2,7 @@
 {% block title %}Registro de dados do IPEM{% endblock title %}
 {% block content %}
 {% csrf_token %}
+{% include "global/partials/messages.html" %}
 <div class="form-container">
     <h2>DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS</h2>
     <form action="{% url "appDocuments:ipem-data-receive" %}" method="post" enctype="multipart/form-data">
