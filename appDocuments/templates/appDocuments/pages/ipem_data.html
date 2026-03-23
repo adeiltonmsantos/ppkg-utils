@@ -24,9 +24,9 @@
             <button type="submit" class="form-btn">Salvar</button>
             <button type="reset" class="form-btn">Cancelar</button>
         </div>
-        <div class="error-messages-container">
-            {{ form.errors }}
-        </div>
+        {% if form.errors %}
+            {{form.errors}}
+        {% endif %}
     </form>
 </div>
 {% endblock content %}

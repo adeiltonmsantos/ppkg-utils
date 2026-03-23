@@ -15,7 +15,7 @@ def validate_file_size(value):
 
 
 def validate_uf_field(value):
-    if value == ' ':
+    if len(str(value).strip()) == 0:
         raise ValidationError('Selecione um estado')
 
 
