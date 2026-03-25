@@ -1,8 +1,9 @@
 import io
+import os
 import shutil
 import tempfile
 
-from django.core.files.storage import FileSystemStorage
+# from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -82,8 +83,8 @@ class AppDocumentsIntegrationTestForm(TestCase):
             'sec_ipem': 'Secretaria',
             'rs_ipem': 'Instituto',
             'name_ppkg_ipem': 'Divisão',
-            'uf_img': None,
-            'img_conv': None
+            'uf_img': '',
+            'img_conv': ''
         }
 
         return super().setUp()
@@ -124,14 +125,20 @@ class AppDocumentsIntegrationTestForm(TestCase):
         url = reverse('appDocuments:ipem-data-receive')
 
         # Creating fake image
-        fake_image = self.make_fake_jpg_image('fake_image')
+        fake_image = self.make_fake_image('fake_image')
 
         # Saving fake image in temporary midia folder
         saveImageAsPng(fake_image, 'brasao')
 
-        # Posting form
-        # resolve = self.client.post(url, data=self.form_data, follow=True)
+        # Testing if image is really saved in temporary folder
+        file_found = os.path.exists(self.temp_media + '/brasao.png')
+        self.assertTrue(file_found)
 
-        pass
-        # Getting names of images by form posted
-        # brasao_img_name = resolve.context['form']
+        # Posting form without coat of arms image. wich must be deleted
+        self.client.post(url, data=self.form_data, follow=True)
+
+        # Flag to indicate if coat of arms image exists in temporary media folder  # noqa: E501
+        file_found = os.path.exists(self.temp_media + '/brasao.png')
+
+        # Verifying if image was deleted
+        self.assertFalse(os.path.exists(self.temp_media + '/brasao.png'))

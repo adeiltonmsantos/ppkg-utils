@@ -87,8 +87,8 @@ def ipemData_receive(request):
 
         for img in imgs:
             # Apagando arquivos pré-existentes
-            if fs.exists(f"{img['name']}.png"):
-                fs.delete(f"{img['name']}.png")
+            if fs.exists(f"{settings.MEDIA_ROOT + img['name']}.png"):
+                fs.delete(f"{settings.MEDIA_ROOT + img['name']}.png")
 
             # Salvando novos arquivos, se foram enviados
             if img['file'] is not None:
