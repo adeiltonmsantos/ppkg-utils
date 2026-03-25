@@ -1,5 +1,5 @@
-# import io
 import json
+import os
 
 # from pathlib import Path
 from django.conf import settings
@@ -7,7 +7,7 @@ from django.contrib import messages
 
 # import os
 # from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage
+# from django.core.files.storage import FileSystemStorage
 from django.http import Http404
 from django.shortcuts import (
     redirect,
@@ -83,12 +83,12 @@ def ipemData_receive(request):
             {'name': 'convenio', 'file': request.FILES.get('img_conv', None)},
         ]
 
-        fs = FileSystemStorage()
+        # fs = FileSystemStorage()
 
         for img in imgs:
             # Apagando arquivos pré-existentes
-            if fs.exists(f"{settings.MEDIA_ROOT + img['name']}.png"):
-                fs.delete(f"{settings.MEDIA_ROOT + img['name']}.png")
+            if os.path.exists(f"{settings.MEDIA_ROOT}/{img['name']}.png"):
+                os.remove(f"{settings.MEDIA_ROOT}/{img['name']}.png")
 
             # Salvando novos arquivos, se foram enviados
             if img['file'] is not None:
