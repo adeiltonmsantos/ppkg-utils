@@ -13,7 +13,6 @@ from parameterized import parameterized
 from PIL import Image
 
 from appDocuments.forms import IpemDataRegisterForm
-from utils.django_midia import saveImageAsPng
 
 
 class AppDocumentsTestForm(TestCase):
@@ -55,7 +54,7 @@ class AppDocumentsIntegrationTestForm(TestCase):
 
         # Data form
         cls.form_data = {
-            'uf_ipem': 'Alagoas',
+            'uf_ipem': 'AL',
             'sec_ipem': 'Secretaria',
             'rs_ipem': 'Instituto',
             'name_ppkg_ipem': 'Divisão',
@@ -81,7 +80,7 @@ class AppDocumentsIntegrationTestForm(TestCase):
     def setUp(self):
         # Data form
         self.form_data = {
-            'uf_ipem': 'Alagoas',
+            'uf_ipem': 'AL',
             'sec_ipem': 'Secretaria',
             'rs_ipem': 'Instituto',
             'name_ppkg_ipem': 'Divisão',
@@ -122,41 +121,47 @@ class AppDocumentsIntegrationTestForm(TestCase):
             resolve.content.decode('utf-8')
         )
 
-    def test_upload_and_delete_file(self):
+    @parameterized.expand([
+        ('img_uf', 'brasao.png'),
+        ('img_conv', 'convenio.png'),
+    ])
+    def test_upload_of_images(self, field_name, img_name):
         # Creating fake image
         fake_image = self.make_fake_image('fake_image')
 
-        # Saving fake image in temporary midia folder
-        saveImageAsPng(fake_image, 'brasao')
+        self.form_data[field_name] = fake_image
 
-        # Testing if image is really saved in temporary folder
-        file_found = os.path.exists(settings.MEDIA_ROOT + '/brasao.png')
-        self.assertTrue(file_found)
-
-        # Testing deleting
-        os.remove(settings.MEDIA_ROOT + '/brasao.png')
-
-        pass
-
-    def test_if_coat_of_arms_image_is_deleted_if_no_upload_is_done(self):
         # URL of the view function that validate form
         url = reverse('appDocuments:ipem-data-receive')
 
-        # Creating fake image
-        fake_image = self.make_fake_image('fake_image')
+        # Posting form with coat of arms image
+        self.client.post(
+            url,
+            data=self.form_data,
+            follow=True,
+            format='multipart'
+        )
 
-        # Saving fake image in temporary midia folder
-        saveImageAsPng(fake_image, 'brasao')
+        # Testing if image exists
+        file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')  # noqa:E501
 
-        # Testing if image is really saved in temporary folder
-        file_found = os.path.exists(settings.MEDIA_ROOT + '/brasao.png')
-        self.assertTrue(file_found)
+        self.assertTrue(
+            file_exists,
+            msg=f"File '{img_name}' doesn't exist"
+        )
 
-        # Posting form without coat of arms image. wich must be deleted
-        self.client.post(url, data=self.form_data, follow=True)
+        # Testing if form post without image erases it
+        self.form_data[field_name] = ''
 
-        # Flag to indicate if coat of arms image exists in temporary media folder  # noqa: E501
-        file_found = os.path.exists(settings.MEDIA_ROOT + 'brasao.png')
+        # Posting form without coat of arms image
+        self.client.post(
+            url,
+            data=self.form_data,
+            follow=True,
+            format='multipart'
+        )
 
-        # Verifying if image was deleted
-        self.assertFalse(os.path.exists(self.temp_media + '/brasao.png'))
+        # Testing if image doesn't exist
+        file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')  # noqa:E501
+
+        self.assertFalse(file_exists)
