@@ -118,6 +118,13 @@ select{
     margin: 2rem 0 0;
 }
 
+/* Form for IPEM printing data */
+.img_ipem_data{
+    max-height: 8rem;
+    width: min-content;
+    margin: 1rem auto;
+}
+
 /* Flash messages */
 .flash-message-container{
     display: flex;

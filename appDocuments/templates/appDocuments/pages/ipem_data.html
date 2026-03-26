@@ -3,6 +3,7 @@
 {% block content %}
 {% csrf_token %}
 {% include "global/partials/messages.html" %}
+{% load static %}
 <div class="form-container">
     <h2>DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS</h2>
     <form action="{% url "appDocuments:ipem-data-receive" %}" method="post" enctype="multipart/form-data">
@@ -11,6 +12,13 @@
         {% for field in form %}
             <div class="form-field">
                 {{ field.label_tag }}
+                {% if field.name == 'img_uf' and path_brasao != 'None' %}
+                    <img class="img_ipem_data" src="{{ MEDIA_URL }}brasao.png" alt="Imagem do brasão do estado do IPEM">
+                {% endif %}
+                {% if field.name == 'img_conv' and path_convenio != 'None' %}
+                    <img class="img_ipem_data" src="{{ MEDIA_URL }}convenio.png" alt="Imagem do convênio INMETRO/IPEM">
+                {% endif %}
+
                 {{ field }}
                 {% if field.errors %}
                     <div class="error-messages">

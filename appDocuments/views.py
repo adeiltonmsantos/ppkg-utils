@@ -4,17 +4,13 @@ import os
 # from pathlib import Path
 from django.conf import settings
 from django.contrib import messages
-
-# import os
-# from django.core.files.base import ContentFile
-# from django.core.files.storage import FileSystemStorage
 from django.http import Http404
 from django.shortcuts import (
     redirect,
-    render,  # noqa: F401
+    render,
 )
 
-# from PIL import Image
+from utils.appDocuments import get_imgs_path, get_ipem_data_json
 from utils.django_midia import saveImageAsPng
 
 # from django.urls import reverse
@@ -39,7 +35,7 @@ def ipemData_receive(request):
         # Conteúdo do JSON
         cleaned_data = form.cleaned_data
         content = {
-            'uf': cleaned_data['uf_ipem'],
+            'uf_ipem': cleaned_data['uf_ipem'],
             'sec_ipem': cleaned_data['sec_ipem'],
             'rs_ipem': cleaned_data['rs_ipem'],
             'name_ppkg_ipem': cleaned_data['name_ppkg_ipem'],
@@ -73,24 +69,42 @@ def ipemData_receive(request):
                 # Salvando arquivo como PNG
                 saveImageAsPng(img['file'], img['name'])
 
-        form = IpemDataRegisterForm()
+        imgs_path = get_imgs_path()
+        path_brasao = str(imgs_path['brasao'])
+        path_convenio = str(imgs_path['convenio'])
+        form = IpemDataRegisterForm(content)
 
         messages.success(request, 'Dados salvos com sucesso!')
 
         return render(
             request,
             'appDocuments/pages/ipem_data.html',
-            context={'form': form}
+            context={
+                'form': form,
+                'path_brasao': path_brasao,
+                'path_convenio': path_convenio,
+            }
         )
 
     return redirect('appDocuments:ipem-data-send')
 
 
 def ipemData_send(request):
-    register_form_data = request.session.get('register_form_data', None)
-    files = request.FILES or None
-    form = IpemDataRegisterForm(register_form_data, files)
+    # Getting data in ipem-data.json
+    form_data = get_ipem_data_json()
+
+    form = IpemDataRegisterForm(form_data)
+
+    imgs_path = get_imgs_path()
+    path_brasao = str(imgs_path['brasao'])
+    path_convenio = str(imgs_path['convenio'])
+
     return render(request,
                   'appDocuments/pages/ipem_data.html',
-                  context={'form': form}
+                  context={
+                      'form': form,
+                      'form_data': form_data,
+                      'path_brasao': path_brasao,
+                      'path_convenio': path_convenio,
+                      }
                   )
