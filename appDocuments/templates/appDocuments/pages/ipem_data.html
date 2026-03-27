@@ -1,11 +1,11 @@
 {% extends "global/pages/base.html" %}
-{% block title %}Registro de dados do IPEM{% endblock title %}
+{% block title %} {{ title }} {% endblock title %}
 {% block content %}
 {% csrf_token %}
 {% include "global/partials/messages.html" %}
 {% load static %}
 <div class="form-container">
-    <h2>DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS</h2>
+    <h2>{{ title_form }}</h2>
     <form action="{% url "appDocuments:ipem-data-receive" %}" method="post" enctype="multipart/form-data">
         {% include "global/partials/standard_form.py" %}
         <div class="form-controls">

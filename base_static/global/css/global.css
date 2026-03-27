@@ -24,6 +24,10 @@ body{
     color: #07053A;
 }
 
+input, select{
+    width: 100%;
+}
+
 
 /* Header */
 .header{
@@ -82,10 +86,18 @@ body{
     gap: 3rem 1rem;
 }
 
-.form-field{
-    display: flex;
-    flex-direction: column;
+.form-field-collumn, .form-field-row{
     width: 100%;
+    display: flex;
+}
+
+.form-field-collumn{
+    flex-direction: column;
+}
+
+.form-field-row{
+    flex-direction: row;
+    align-items: center;
 }
 
 .form-text-input,
@@ -120,9 +132,9 @@ select{
 
 /* Form for IPEM printing data */
 .img_ipem_data{
-    max-height: 8rem;
-    width: min-content;
-    margin: 1rem auto;
+    height: 5rem;
+    width: auto;
+    margin: auto 0 auto 1rem;
 }
 
 /* Flash messages */

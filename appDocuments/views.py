@@ -79,6 +79,8 @@ def ipemData_receive(request):
                 'form': form,
                 'path_brasao': path_brasao,
                 'path_convenio': path_convenio,
+                'title': 'Registro de dados do IPEM',
+                'title_form': 'DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS',
             }
         )
 
@@ -98,9 +100,11 @@ def ipemData_send(request):
     return render(request,
                   'appDocuments/pages/ipem_data.html',
                   context={
-                      'form': form,
-                      'form_data': form_data,
-                      'path_brasao': path_brasao,
-                      'path_convenio': path_convenio,
+                        'form': form,
+                        'form_data': form_data,
+                        'path_brasao': path_brasao,
+                        'path_convenio': path_convenio,
+                        'title': 'Registro de dados do IPEM',
+                        'title_form': 'DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS',  # noqa: E501
                       }
                   )
