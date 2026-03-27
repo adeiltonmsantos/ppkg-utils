@@ -5,10 +5,7 @@ import os
 from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
-from django.shortcuts import (
-    redirect,
-    render,
-)
+from django.shortcuts import redirect, render
 
 from utils.appDocuments import get_imgs_path, get_ipem_data_json
 from utils.django_midia import saveImageAsPng
@@ -27,8 +24,8 @@ def ipemData_receive(request):
 
     files = request.FILES
     post = request.POST
-    request.session['register_form_data'] = post
-    form = IpemDataRegisterForm(request.session['register_form_data'], files)
+    # request.session['register_form_data'] = post
+    form = IpemDataRegisterForm(post, files)
 
     # Validação aqui
     if form.is_valid():
