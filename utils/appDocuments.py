@@ -19,9 +19,15 @@ def get_imgs_path():
     imgs_path = {}
 
     for img in imgs:
-        if os.path.exists(settings.MEDIA_ROOT + f'{img}.png'):
-            imgs_path[img] = settings.MEDIA_ROOT + f'{img}.png'
-        else:
-            imgs_path[img] = None
+        try:
+            if os.path.exists(settings.MEDIA_ROOT + f'{img}.png'):
+                imgs_path[img] = settings.MEDIA_ROOT + f'{img}.png'
+            else:
+                imgs_path[img] = None
+        except Exception:
+            if os.path.exists(settings.MEDIA_ROOT / f'{img}.png'):
+                imgs_path[img] = settings.MEDIA_ROOT / f'{img}.png'
+            else:
+                imgs_path[img] = None
 
     return imgs_path
