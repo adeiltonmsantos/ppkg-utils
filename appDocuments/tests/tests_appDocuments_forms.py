@@ -12,7 +12,8 @@ from django.urls import reverse
 from parameterized import parameterized
 from PIL import Image
 
-from appDocuments.forms import IpemDataRegisterForm
+# from forms import IpemDataRegisterForm
+from appDocuments.forms.ipem_data_register import IpemDataRegisterForm
 
 
 class AppDocumentsTestForm(TestCase):

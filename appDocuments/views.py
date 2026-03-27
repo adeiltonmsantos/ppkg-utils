@@ -10,8 +10,6 @@ from django.shortcuts import redirect, render
 from utils.appDocuments import get_imgs_path, get_ipem_data_json
 from utils.django_midia import saveImageAsPng
 
-# from django.urls import reverse
-# from .forms import IpemDataRegisterForm
 from .forms.ipem_data_register import IpemDataRegisterForm
 
 
