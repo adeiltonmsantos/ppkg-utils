@@ -1,9 +1,7 @@
+from collections import defaultdict
+
 from django import forms
 from django.core.exceptions import ValidationError
-
-
-def add_error_message_to_field(field, error_type, error_message):
-    field.error_messages[error_type] = error_message
 
 
 def validate_file_size(value):
@@ -14,22 +12,15 @@ def validate_file_size(value):
     return value
 
 
-def validate_uf_field(value):
-    if len(str(value).strip()) == 0:
-        raise ValidationError('Selecione um estado')
-
-
-def validate_size_characters(num_chars, field_label):
-    def effective_validator(value):
-        if len(str(value).strip()) < num_chars:
-            raise ValidationError(
-                f'O campo "{field_label}" não pode ter menos de {num_chars} caracteres')  # noqa: E501
+def is_num_characters_valid(value, num_chars_valid):
+    is_valid = len(str(value).strip()) >= num_chars_valid
+    return is_valid
 
 
 class IpemDataRegisterForm(forms.Form):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.errors_fields = defaultdict(list)
 
     uf_choices = {
         'AC': 'Acre',
@@ -67,7 +58,6 @@ class IpemDataRegisterForm(forms.Form):
         error_messages={
             'required': 'O campo "Estado do IPEM" é obrigatório'
         },
-        validators=[validate_uf_field]
     )
 
     sec_ipem = forms.CharField(
@@ -122,3 +112,35 @@ class IpemDataRegisterForm(forms.Form):
         }),
         validators=[validate_file_size]
     )
+
+    def clean(self):
+        super_clean = super().clean()
+
+        cleaned_data = self.cleaned_data
+        uf_ipem = cleaned_data.get('uf_ipem')
+        sec_ipem = cleaned_data.get('sec_ipem')
+        rs_ipem = cleaned_data.get('rs_ipem')
+        name_ppkg_ipem = cleaned_data.get('name_ppkg_ipem')
+        # img_uf = cleaned_data.get('img_uf')
+        # img_conv = cleaned_data.get('img_conv')
+
+        # Validating uf_ipem
+        if len(str(uf_ipem).strip()) == 0:
+            self.errors_fields['uf_ipem'].append('Selecione um estado')
+
+        # Validating sec_ipem
+        if not is_num_characters_valid(sec_ipem, 10):
+            self.errors_fields['sec_ipem'].append('O nome da secretaria deve ter no mínimo 10 caracteres')  # noqa: E501
+
+        # Validating rs_ipem
+        if not is_num_characters_valid(rs_ipem, 10):
+            self.errors_fields['rs_ipem'].append('A razão social do IPEM deve ter no mínimo 10 caracteres')  # noqa: E501
+
+        # Validating name_ppgk_ipem
+        if not is_num_characters_valid(name_ppkg_ipem, 10):
+            self.errors_fields['name_ppkg_ipem'].append('O nome do setor de pré-embalados deve ter no mínimo 10 caracteres')  # noqa: E501
+
+        if self.errors_fields:
+            raise ValidationError(self.errors_fields)
+
+        return super_clean
