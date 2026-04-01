@@ -7,7 +7,7 @@
 <div class="form-container">
     <h2>{{ title_form }}</h2>
     <form action="{% url "appDocuments:ipem-data-receive" %}" method="post" enctype="multipart/form-data">
-        {% include "global/partials/standard_form.py" %}
+        {% include "global/partials/standard_form.html" %}
         <div class="form-controls">
             <button type="submit" class="form-btn">Salvar</button>
             <button type="reset" class="form-btn">Cancelar</button>
