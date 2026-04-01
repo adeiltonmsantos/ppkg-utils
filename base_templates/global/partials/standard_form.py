@@ -13,7 +13,7 @@
                 {% endif %}
         </div>
             {% if field.errors %}
-            <div class="error-messages">
+            <div class="error-message-form">
                 {{ field.errors }}
             </div>
         {% endif %}

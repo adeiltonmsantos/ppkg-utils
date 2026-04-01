@@ -28,6 +28,10 @@ input, select{
     width: 100%;
 }
 
+.center{
+    text-align: center;
+}
+
 
 /* Header */
 .header{
@@ -129,6 +133,15 @@ select{
     padding: 1.5rem 0;
     margin: 2rem 0 0;
 }
+
+.error-message-form{
+    color: #ff0000;
+}
+
+.error-message-form li{
+    list-style: none;
+}
+
 
 /* Form for IPEM printing data */
 .img_ipem_data{
