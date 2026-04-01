@@ -5,7 +5,7 @@ import os
 from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 
 from utils.appDocuments import get_imgs_path, get_ipem_data_json
 from utils.django_midia import saveImageAsPng
@@ -65,26 +65,27 @@ def ipemData_receive(request):
                 # Salvando arquivo como PNG
                 saveImageAsPng(img['file'], img['name'])
 
-        imgs_path = get_imgs_path()
-        path_brasao = str(imgs_path['brasao'])
-        path_convenio = str(imgs_path['convenio'])
-        form = IpemDataRegisterForm(content)
+        # form = IpemDataRegisterForm(content)
 
         messages.success(request, 'Dados salvos com sucesso!')
 
-        return render(
-            request,
-            'appDocuments/pages/ipem_data.html',
-            context={
-                'form': form,
-                'path_brasao': path_brasao,
-                'path_convenio': path_convenio,
-                'title': 'Registro de dados do IPEM',
-                'title_form': 'DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS',
-            }
-        )
+    imgs_path = get_imgs_path()
+    path_brasao = str(imgs_path['brasao'])
+    path_convenio = str(imgs_path['convenio'])
 
-    return redirect('appDocuments:ipem-data-send')
+    return render(
+        request,
+        'appDocuments/pages/ipem_data.html',
+        context={
+            'form': form,
+            'path_brasao': path_brasao,
+            'path_convenio': path_convenio,
+            'title': 'Registro de dados do IPEM',
+            'title_form': 'DADOS DO IPEM PARA IMPRESSÃO EM DOCUMENTOS',
+        }
+    )
+
+    # return redirect('appDocuments:ipem-data-send')
 
 
 def ipemData_send(request):
