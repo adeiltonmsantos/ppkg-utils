@@ -58,7 +58,7 @@ class AppDocumentsIntegrationTestForm(TestCase):
             'uf_ipem': 'AL',
             'sec_ipem': 'Secretaria',
             'rs_ipem': 'Instituto',
-            'name_ppkg_ipem': 'Divisão',
+            'name_ppkg_ipem': 'Divisão de Pré-Embalados',
             'uf_img': None,
             'img_conv': None
         }
@@ -82,16 +82,16 @@ class AppDocumentsIntegrationTestForm(TestCase):
         # Data form
         self.form_data = {
             'uf_ipem': 'AL',
-            'sec_ipem': 'Secretaria',
-            'rs_ipem': 'Instituto',
-            'name_ppkg_ipem': 'Divisão',
+            'sec_ipem': 'Secretaria de Estado',
+            'rs_ipem': 'Instituto de Pesos e Medidas',
+            'name_ppkg_ipem': 'Divisão de Pré-Embalados',
             'uf_img': '',
             'img_conv': ''
         }
 
         return super().setUp()
 
-    def make_fake_image(self, img_name, img_format='PNG'):
+    def make_fake_image(self, img_name, size_mb=None):
         # Creating image in memory
         image = Image.new('RGB', (50, 50), color='green')
         img_io = io.BytesIO()
@@ -102,6 +102,29 @@ class AppDocumentsIntegrationTestForm(TestCase):
             img_io.getvalue(),
             content_type='image/jpeg'
         )
+        # 1. Cria a imagem básica em memória
+        # image = Image.new('RGB', (50, 50), color='green')
+        # img_io = io.BytesIO()
+        # image.save(img_io, format=img_format)
+
+        # # 2. Se o parâmetro size_mb for passado, ajustamos o tamanho
+        # if size_mb:
+        #     target_size_bytes = int(size_mb * 1024 * 1024)
+        #     current_size = img_io.tell() # Posição atual do cursor (tamanho atual)
+
+        #     if target_size_bytes > current_size:
+        #         # Adiciona a diferença em bytes nulos (\x00)
+        #         remaining_bytes = target_size_bytes - current_size
+        #         img_io.write(b'\0' * remaining_bytes)
+
+        # # Captura o conteúdo final
+        # content = img_io.getvalue()
+
+        # return SimpleUploadedFile(
+        #     name=f'{img_name}.{img_format.lower()}',
+        #     content=content,
+        #     content_type=f'image/{img_format.lower()}'
+        # )
 
     def test_uf_field_must_be_selected(self):
         # Defining invalid value to uf fielf
@@ -166,3 +189,33 @@ class AppDocumentsIntegrationTestForm(TestCase):
         file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')  # noqa:E501
 
         self.assertFalse(file_exists)
+
+    @parameterized.expand([
+        ('uf_ipem', 'Selecione um estado'),
+        ('sec_ipem', 'O nome da secretaria deve ter no mínimo 10 caracteres'),
+        ('rs_ipem', 'A razão social do IPEM deve ter no mínimo 10 caracteres'),
+        ('name_ppkg_ipem', 'O nome do setor de pré-embalados deve ter no mínimo 10 caracteres'),  # noqa: E501
+        # ('img_uf', 'A imagem do brasão do estado não deve ser superior a 3 MB'),  # noqa: E501
+        # ('img_conv', 'A imagem do convênio INMETRO/IPEM não deve ser superior a 3MB'),  # noqa: E501
+    ])
+    def test_error_messages_fields_are_correct(self, field_name, message):
+        if field_name in ('img_uf', 'img_conv'):
+            pass
+        else:
+            self.form_data[field_name] = '  '
+            # URL of the view function that validate form
+            url = reverse('appDocuments:ipem-data-receive')
+
+            # Posting data
+            response = self.client.post(
+                url,
+                data=self.form_data,
+                follow=True,
+                format='multipart'
+            )
+
+            self.assertIn(
+                message,
+                response.content.decode('utf-8'),
+                msg=f'"{field_name}" error message mus be "{message}"'
+            )
