@@ -13,7 +13,9 @@
             <button type="reset" class="form-btn">Cancelar</button>
         </div>
         {% if form.errors %}
-            {{form.errors}}
+            <p class="error-message-form center">
+                Corrija o(s) erro(s) acima listado(s) e tente novamente
+            </p>
         {% endif %}
     </form>
 </div>
