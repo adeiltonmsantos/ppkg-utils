@@ -195,8 +195,8 @@ class AppDocumentsIntegrationTestForm(TestCase):
         ('sec_ipem', 'O nome da secretaria deve ter no mínimo 10 caracteres'),
         ('rs_ipem', 'A razão social do IPEM deve ter no mínimo 10 caracteres'),
         ('name_ppkg_ipem', 'O nome do setor de pré-embalados deve ter no mínimo 10 caracteres'),  # noqa: E501
-        # ('img_uf', 'A imagem do brasão do estado não deve ser superior a 3 MB'),  # noqa: E501
-        # ('img_conv', 'A imagem do convênio INMETRO/IPEM não deve ser superior a 3MB'),  # noqa: E501
+        ('img_uf', 'A imagem do brasão do estado não deve ser superior a 3 MB'),  # noqa: E501
+        ('img_conv', 'A imagem do convênio INMETRO/IPEM não deve ser superior a 3MB'),  # noqa: E501
     ])
     def test_error_messages_fields_are_correct(self, field_name, message):
         if field_name in ('img_uf', 'img_conv'):

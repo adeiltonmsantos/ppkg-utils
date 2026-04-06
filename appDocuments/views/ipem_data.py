@@ -14,7 +14,7 @@ from utils.django_midia import saveImageAsPng
 class IpemData(View):
     def render_template(self, **kwargs):
         form = kwargs.get('form', None)
-        form_data = kwargs.get('form_data', None)
+        form_data = kwargs.get('form_data', None),
         path_brasao = kwargs.get('path_brasao', None)
         path_convenio = kwargs.get('path_convenio', None)
 
@@ -24,6 +24,7 @@ class IpemData(View):
             context={
                 'form': form,
                 'form_data': form_data,
+                'title_form': 'DADOS CADASTRAIS DO IPEM',
                 'path_brasao': path_brasao,
                 'path_convenio': path_convenio,
             }
@@ -99,6 +100,17 @@ class IpemData(View):
                 form=form,
                 path_brasao=path_brasao,
                 path_convenio=path_convenio
+            )
+        else:
+            imgs_path = get_imgs_path()
+            path_brasao = str(imgs_path['brasao'])
+            path_convenio = str(imgs_path['convenio'])
+
+            return self.render_template(
+                form=form,
+                form_data=self.request.POST,
+                path_brasao=path_brasao,
+                path_convenio=path_convenio,
             )
 
         return redirect('appDocuments:ipem-data-send')

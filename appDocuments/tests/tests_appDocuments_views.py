@@ -6,9 +6,10 @@ from appDocuments import views
 
 class appDocumentsViewsTest(SimpleTestCase):
 
-    def test_appDocuments_ipem_data_view_is_correct(self):
+    def test_appDocuments_ipem_data_based_function_view_is_correct(self):
         view = resolve(reverse('appDocuments:ipem-data-send'))
-        self.assertIs(view.func, views.ipemData_send)
+        view_wanted = views.IpemData.as_view()
+        self.assertIs(view, view_wanted)
 
     def test_appDocuments_ipem_data_template_is_correct(self):
         response = self.client.get(reverse('appDocuments:ipem-data-send'))
