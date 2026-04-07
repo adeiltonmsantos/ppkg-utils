@@ -100,7 +100,6 @@ class IpemDataRegisterForm(forms.Form):
             'class': 'form-file-input',
             'accept': 'image/*'
         }),
-        validators=[validate_file_size]
     )
 
     img_conv = forms.FileField(
@@ -110,7 +109,6 @@ class IpemDataRegisterForm(forms.Form):
             'class': 'form-file-input',
             'accept': 'image/*'
         }),
-        validators=[validate_file_size]
     )
 
     def clean(self):
@@ -121,8 +119,8 @@ class IpemDataRegisterForm(forms.Form):
         sec_ipem = cleaned_data.get('sec_ipem')
         rs_ipem = cleaned_data.get('rs_ipem')
         name_ppkg_ipem = cleaned_data.get('name_ppkg_ipem')
-        # img_uf = cleaned_data.get('img_uf')
-        # img_conv = cleaned_data.get('img_conv')
+        img_uf = self.files.get('img_uf')
+        img_conv = self.files.get('img_conv')
 
         # Validating uf_ipem
         if len(str(uf_ipem).strip()) == 0:
@@ -139,6 +137,12 @@ class IpemDataRegisterForm(forms.Form):
         # Validating name_ppgk_ipem
         if not is_num_characters_valid(name_ppkg_ipem, 10):
             self.errors_fields['name_ppkg_ipem'].append('O nome do setor de pré-embalados deve ter no mínimo 10 caracteres')  # noqa: E501
+
+        # Validating size of images
+        if img_uf and img_uf.size > (3 * 1024 * 1024):
+            self.errors_fields['img_uf'].append('O tamanho da imagem do brasão do estado não pode ser maior que 3MB')  # noqa: E501
+        if img_conv and img_conv.size > (3 * 1024 * 1024):
+            self.errors_fields['img_conv'].append('O tamanho da imagem do convênio INMETRO/IPEM não pode ser maior que 3MB')  # noqa: E501
 
         if self.errors_fields:
             raise ValidationError(self.errors_fields)

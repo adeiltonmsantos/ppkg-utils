@@ -92,39 +92,41 @@ class AppDocumentsIntegrationTestForm(TestCase):
         return super().setUp()
 
     def make_fake_image(self, img_name, size_mb=None):
-        # Creating image in memory
-        image = Image.new('RGB', (50, 50), color='green')
-        img_io = io.BytesIO()
-        image.save(img_io, format='JPEG')
-
-        return SimpleUploadedFile(
-            f'{img_name}.jpg',
-            img_io.getvalue(),
-            content_type='image/jpeg'
-        )
-        # 1. Cria a imagem básica em memória
+        # # Creating image in memory
         # image = Image.new('RGB', (50, 50), color='green')
         # img_io = io.BytesIO()
-        # image.save(img_io, format=img_format)
-
-        # # 2. Se o parâmetro size_mb for passado, ajustamos o tamanho
-        # if size_mb:
-        #     target_size_bytes = int(size_mb * 1024 * 1024)
-        #     current_size = img_io.tell() # Posição atual do cursor (tamanho atual)
-
-        #     if target_size_bytes > current_size:
-        #         # Adiciona a diferença em bytes nulos (\x00)
-        #         remaining_bytes = target_size_bytes - current_size
-        #         img_io.write(b'\0' * remaining_bytes)
-
-        # # Captura o conteúdo final
-        # content = img_io.getvalue()
+        # image.save(img_io, format='JPEG')
 
         # return SimpleUploadedFile(
-        #     name=f'{img_name}.{img_format.lower()}',
-        #     content=content,
-        #     content_type=f'image/{img_format.lower()}'
+        #     f'{img_name}.jpg',
+        #     img_io.getvalue(),
+        #     content_type='image/jpeg'
         # )
+
+        # 1. Cria a imagem básica em memória
+        img_format = 'JPEG'
+        image = Image.new('RGB', (50, 50), color='green')
+        img_io = io.BytesIO()
+        image.save(img_io, format=img_format)
+
+        # 2. Se o parâmetro size_mb for passado, ajustamos o tamanho
+        if size_mb:
+            target_size_bytes = int(size_mb * 1024 * 1024)
+            current_size = img_io.tell()  # Posição atual do cursor (tamanho atual)  # noqa: E501
+
+            if target_size_bytes > current_size:
+                # Adiciona a diferença em bytes nulos (\x00)
+                remaining_bytes = target_size_bytes - current_size
+                img_io.write(b'\0' * remaining_bytes)
+
+        # Captura o conteúdo final
+        content = img_io.getvalue()
+
+        return SimpleUploadedFile(
+            name=f'{img_name}.{img_format.lower()}',
+            content=content,
+            content_type=f'image/{img_format.lower()}'
+        )
 
     def test_uf_field_must_be_selected(self):
         # Defining invalid value to uf fielf
@@ -158,7 +160,7 @@ class AppDocumentsIntegrationTestForm(TestCase):
         # URL of the view function that validate form
         url = reverse('appDocuments:ipem-data-receive')
 
-        # Posting form with coat of arms image
+        # Posting form with image
         self.client.post(
             url,
             data=self.form_data,
@@ -177,7 +179,7 @@ class AppDocumentsIntegrationTestForm(TestCase):
         # Testing if form post without image erases it
         self.form_data[field_name] = ''
 
-        # Posting form without coat of arms image
+        # Posting form without image
         self.client.post(
             url,
             data=self.form_data,
@@ -189,6 +191,29 @@ class AppDocumentsIntegrationTestForm(TestCase):
         file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')  # noqa:E501
 
         self.assertFalse(file_exists)
+
+    @parameterized.expand([
+        ('img_uf', 'O tamanho da imagem do brasão do estado não pode ser maior que 3MB'),  # noqa: E501
+        ('img_conv', 'O tamanho da imagem do convênio INMETRO/IPEM não pode ser maior que 3MB'),  # noqa: E501
+    ])
+    def test_if_size_of_images_are_allowed(self, field_name, msg_wanted):
+        # Creating fake image
+        fake_image = self.make_fake_image('fake_image', 4)
+
+        self.form_data[field_name] = fake_image
+
+        # URL of the view function that validate form
+        url = reverse('appDocuments:ipem-data-receive')
+
+        # Posting form with coat of arms image
+        resolve = self.client.post(
+            url,
+            data=self.form_data,
+            follow=True,
+            format='multipart'
+        )
+
+        self.assertIn(msg_wanted, resolve.content.decode('utf-8'))
 
     @parameterized.expand([
         ('uf_ipem', 'Selecione um estado'),
