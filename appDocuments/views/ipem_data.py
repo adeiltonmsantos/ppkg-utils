@@ -1,17 +1,27 @@
 import json
 import os
+from pathlib import Path
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.views import View
+from django.views.generic.base import TemplateView
 
 from appDocuments.forms import IpemDataRegisterForm
-from utils.appDocuments import get_imgs_path, get_ipem_data_json
+from utils.appDocuments import get_imgs_path
 from utils.django_midia import saveImageAsPng
 
 
+class HomeView(TemplateView):
+    template_name = 'global/pages/base.html'
+
+
 class IpemData(View):
+
+    IPEM_DATA_JSON_PATH = Path(apps.get_app_config('appDocuments').path) / 'ipem-data.json'  # noqa: E501
+
     def render_template(self, **kwargs):
         form = kwargs.get('form', None)
         form_data = kwargs.get('form_data', None),
@@ -32,7 +42,9 @@ class IpemData(View):
 
     def get(self, *args, **kwargs):
         # Getting data in ipem-data.json
-        form_data = get_ipem_data_json()
+        json_path = self.IPEM_DATA_JSON_PATH
+        with open(json_path, 'r', encoding='utf-8') as file:
+            form_data = json.load(file)
 
         form = IpemDataRegisterForm(form_data)
 
@@ -64,7 +76,7 @@ class IpemData(View):
             }
 
             # URL where JSON must be saved
-            url_json = settings.BASE_DIR / 'appDocuments/ipem-data.json'
+            url_json = self.IPEM_DATA_JSON_PATH
 
             # Trying to save JSON
             try:

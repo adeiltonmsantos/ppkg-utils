@@ -1,16 +1,6 @@
-import json
 import os
 
 from django.conf import settings
-
-
-def get_ipem_data_json():
-    # Getting data in ipem-data.json
-    json_path = settings.BASE_DIR / 'appDocuments/ipem-data.json'
-    with open(json_path, 'r', encoding='utf-8') as file:
-        form_data = json.load(file)
-
-    return form_data
 
 
 def get_imgs_path():
