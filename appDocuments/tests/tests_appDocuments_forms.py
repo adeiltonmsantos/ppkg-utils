@@ -2,6 +2,7 @@ import io
 import os
 import shutil
 import tempfile
+from unittest.mock import patch
 
 from django.conf import settings
 
@@ -50,18 +51,8 @@ class AppDocumentsTestForm(TestCase):
 class AppDocumentsIntegrationTestForm(TestCase):
     @classmethod
     def setUpClass(cls):
-        # Creating the temporary folder
+        # Creating the temporary media folder
         cls.temp_media = tempfile.mkdtemp()
-
-        # Data form
-        cls.form_data = {
-            'uf_ipem': 'AL',
-            'sec_ipem': 'Secretaria',
-            'rs_ipem': 'Instituto',
-            'name_ppkg_ipem': 'Divisão de Pré-Embalados',
-            'uf_img': None,
-            'img_conv': None
-        }
 
         # Overwriting MEDIA_ROOT url
         cls.override = override_settings(MEDIA_ROOT=cls.temp_media)
@@ -244,3 +235,20 @@ class AppDocumentsIntegrationTestForm(TestCase):
                 response.content.decode('utf-8'),
                 msg=f'"{field_name}" error message mus be "{message}"'
             )
+
+    @patch(
+            'appDocuments.forms.ipem_data_register.JSON_PATH',
+            new='non_existing_folder/'
+    )
+    def test_if_json_file_exists(self):
+        url = reverse('appDocuments:ipem-data-receive')
+        response = self.client.post(
+            url,
+            data=self.form_data,
+            follow=True,
+            format='multipart'
+        )
+        self.assertIn(
+            'Os dados do IPEM não foram salvos',
+            response.content.decode('utf-8')
+        )

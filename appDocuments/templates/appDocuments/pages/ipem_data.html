@@ -16,6 +16,13 @@
             <p class="error-message-form center">
                 Corrija o(s) erro(s) acima listado(s) e tente novamente
             </p>
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <p>
+                        {{ error }}                        
+                    </p>
+                {% endfor %}
+            {% endif %}
         {% endif %}
     </form>
 </div>
