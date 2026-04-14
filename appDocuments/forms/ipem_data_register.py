@@ -1,15 +1,12 @@
+import json
 from collections import defaultdict
+from pathlib import Path
 
 from django import forms
+from django.apps import apps
 from django.core.exceptions import ValidationError
 
-
-def validate_file_size(value):
-    filesize = value.size
-    # 3MB em bytes
-    if filesize > 3 * 1024 * 1024:
-        raise ValidationError("A imagem não pode ser maior que 3MB.")
-    return value
+JSON_PATH = Path(apps.get_app_config('appDocuments').path) / 'ipem-data.json'
 
 
 def is_num_characters_valid(value, num_chars_valid):
@@ -137,6 +134,20 @@ class IpemDataRegisterForm(forms.Form):
         # Validating name_ppgk_ipem
         if not is_num_characters_valid(name_ppkg_ipem, 10):
             self.errors_fields['name_ppkg_ipem'].append('O nome do setor de pré-embalados deve ter no mínimo 10 caracteres')  # noqa: E501
+
+        # Validating if JSON can be saved
+        form_data = {
+            'uf_ipem': uf_ipem,
+            'sec_ipem': sec_ipem,
+            'rs_ipem': rs_ipem,
+            'name_ppkg_ipem': name_ppkg_ipem,
+        }
+        url_json = JSON_PATH
+        try:
+            with open(url_json, 'w', encoding='UTF-8') as f:
+                json.dump(form_data, f, indent=4, ensure_ascii=False)
+        except Exception:
+            self.add_error(None, 'Os dados do IPEM não foram salvos')
 
         # Validating size of images
         if img_uf and img_uf.size > (3 * 1024 * 1024):

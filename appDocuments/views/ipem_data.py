@@ -13,14 +13,14 @@ from appDocuments.forms import IpemDataRegisterForm
 from utils.appDocuments import get_imgs_path
 from utils.django_midia import saveImageAsPng
 
+JSON_PATH = Path(apps.get_app_config('appDocuments').path) / 'ipem-data.json'
+
 
 class HomeView(TemplateView):
     template_name = 'global/pages/base.html'
 
 
 class IpemData(View):
-
-    IPEM_DATA_JSON_PATH = Path(apps.get_app_config('appDocuments').path) / 'ipem-data.json'  # noqa: E501
 
     def render_template(self, **kwargs):
         form = kwargs.get('form', None)
@@ -42,7 +42,7 @@ class IpemData(View):
 
     def get(self, *args, **kwargs):
         # Getting data in ipem-data.json
-        json_path = self.IPEM_DATA_JSON_PATH
+        json_path = JSON_PATH
         with open(json_path, 'r', encoding='utf-8') as file:
             form_data = json.load(file)
 
@@ -74,16 +74,6 @@ class IpemData(View):
                 'rs_ipem': cleaned_data['rs_ipem'],
                 'name_ppkg_ipem': cleaned_data['name_ppkg_ipem'],
             }
-
-            # URL where JSON must be saved
-            url_json = self.IPEM_DATA_JSON_PATH
-
-            # Trying to save JSON
-            try:
-                with open(url_json, 'w', encoding='UTF-8') as f:
-                    json.dump(form_data, f, indent=4, ensure_ascii=False)
-            except Exception as e:
-                print('Erro encontrado: ', e)
 
             # Getting images as objects and inserting then in a list
             imgs = [
