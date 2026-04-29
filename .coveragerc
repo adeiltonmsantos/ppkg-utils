@@ -1,0 +1,22 @@
+[run]
+# Em vez de '.', use o nome das suas pastas de código para ser mais preciso
+source = .
+
+branch = True
+
+# Vamos remover o 'tests' da fase de execução para não dar conflito
+omit =
+    manage.py
+    __init__.py
+    **/urls.py
+    **/utils/**
+    **/*test*.py
+    **/migrations/**
+    manage.py
+
+[report]
+show_missing = True
+# Deixamos para omitir os testes apenas no RELATÓRIO final
+omit =
+    **/tests/**
+    **/migrations/**
