@@ -27,6 +27,7 @@ class IpemData(View):
         form_data = kwargs.get('form_data', None),
         path_brasao = kwargs.get('path_brasao', None)
         path_convenio = kwargs.get('path_convenio', None)
+        path_assinatura = kwargs.get('path_assinatura', None)
 
         return render(
             self.request,
@@ -37,6 +38,7 @@ class IpemData(View):
                 'title_form': 'DADOS CADASTRAIS DO IPEM',
                 'path_brasao': path_brasao,
                 'path_convenio': path_convenio,
+                'path_assinatura': path_assinatura,
             }
         )
 
@@ -51,11 +53,13 @@ class IpemData(View):
         imgs_path = get_imgs_path()
         path_brasao = str(imgs_path['brasao'])
         path_convenio = str(imgs_path['convenio'])
+        path_assinatura = str(imgs_path['assinatura'])
 
         return self.render_template(
             form=form,
             path_brasao=path_brasao,
-            path_convenio=path_convenio
+            path_convenio=path_convenio,
+            path_assinatura=path_assinatura
         )
 
     def post(self, *args, **kwargs):
@@ -73,27 +77,48 @@ class IpemData(View):
                 'sec_ipem': cleaned_data['sec_ipem'],
                 'rs_ipem': cleaned_data['rs_ipem'],
                 'name_ppkg_ipem': cleaned_data['name_ppkg_ipem'],
+                'img_uf_checkbox': cleaned_data['img_uf_checkbox'],
+                'img_conv_checkbox': cleaned_data['img_conv_checkbox'],
+                'img_signt_checkbox': cleaned_data['img_signt_checkbox'],
             }
 
             # Getting images as objects and inserting then in a list
             imgs = [
-                {'name': 'brasao', 'file': self.request.FILES.get('img_uf', None)},  # noqa: E501
-                {'name': 'convenio', 'file': self.request.FILES.get('img_conv', None)},  # noqa: E501
+                {
+                    'name': 'brasao',
+                    'file': self.request.FILES.get('img_uf', None),
+                    'erase': form_data['img_uf_checkbox']
+                },
+                {
+                    'name': 'convenio',
+                    'file': self.request.FILES.get('img_conv', None),
+                    'erase': form_data['img_conv_checkbox']
+                },
+                {
+                    'name': 'assinatura',
+                    'file': self.request.FILES.get('img_signt', None),
+                    'erase': form_data['img_signt_checkbox']
+                },
             ]
 
             for img in imgs:
-                # Erasing previous files
-                if os.path.exists(f"{settings.MEDIA_ROOT}/{img['name']}.png"):
+                # Erasing file if user selected checkbox
+                if img['erase']:
                     os.remove(f"{settings.MEDIA_ROOT}/{img['name']}.png")
 
                 # Saving new files, if sent
                 if img['file'] is not None:
+                    # Trying removing previuos file saved, if exists
+                    if os.path.exists(f"{settings.MEDIA_ROOT}/{img['name']}.png"):  # noqa:E501
+                        os.remove(f"{settings.MEDIA_ROOT}/{img['name']}.png")
+
                     # Saving file as PNG
                     saveImageAsPng(img['file'], img['name'])
 
             imgs_path = get_imgs_path()
             path_brasao = str(imgs_path['brasao'])
             path_convenio = str(imgs_path['convenio'])
+            path_assinatura = str(imgs_path['assinatura'])
             form = IpemDataRegisterForm(form_data)
 
             messages.success(self.request, 'Dados salvos com sucesso!')
@@ -101,7 +126,8 @@ class IpemData(View):
             return self.render_template(
                 form=form,
                 path_brasao=path_brasao,
-                path_convenio=path_convenio
+                path_convenio=path_convenio,
+                path_assinatura=path_assinatura
             )
         else:
             imgs_path = get_imgs_path()
@@ -113,6 +139,7 @@ class IpemData(View):
                 form_data=self.request.POST,
                 path_brasao=path_brasao,
                 path_convenio=path_convenio,
+                path_assinatura=path_assinatura,
             )
 
         return redirect('appDocuments:ipem-data-send')

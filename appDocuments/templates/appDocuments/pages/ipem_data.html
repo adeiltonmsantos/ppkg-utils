@@ -7,7 +7,90 @@
 <div class="form-container">
     <h2>{{ title_form }}</h2>
     <form action="{% url "appDocuments:ipem-data-receive" %}" method="post" enctype="multipart/form-data">
-        {% include "global/partials/standard_form.html" %}
+
+        {% comment %} {% include "global/partials/standard_form.html" %} {% endcomment %}
+
+        {% csrf_token %}
+        <div class="fields-container">
+
+            {% for field in form %}
+                {% if field.widget_type != 'file' and field.widget_type != 'checkbox' %}
+                    <div class="form-field-collumn">
+                        {{ field.label_tag }}
+                        <div>
+                            {{ field }}
+                        </div>
+                            {% if field.errors %}
+                            <div class="error-message-form">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-field-collumn">
+                {{ form.img_uf.label_tag }}
+                <div class="form-field-row">
+                    {{ form.img_uf }}
+                    {% if path_brasao != 'None' %}
+                        <img class="img_ipem_data" src="{{ MEDIA_URL }}brasao.png" alt="Imagem do brasão do estado do IPEM">
+                        <div class="img-checkbox">
+                            {{ form.img_uf_checkbox.label_tag }}
+                            {{ form.img_uf_checkbox }}
+                        </div>
+                    {% endif %}
+                </div>
+                    {% if field.errors %}
+                    <div class="error-message-form">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-field-collumn">
+                {{ form.img_conv.label_tag }}
+                <div class="form-field-row">
+                    {{ form.img_conv }}
+                    {% if path_convenio != 'None' %}
+                        <img class="img_ipem_data" src="{{ MEDIA_URL }}convenio.png" alt="Imagem do convênio INMETRO/IPEM">
+                        <div class="img-checkbox">
+                            {{ form.img_conv_checkbox.label_tag }}
+                            {{ form.img_conv_checkbox }}
+                        </div>
+                    {% endif %}
+                </div>
+                    {% if field.errors %}
+                    <div class="error-message-form">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-field-collumn">
+                {{ form.img_signt.label_tag }}
+                <div class="form-field-row">
+                    {{ form.img_signt }}
+                    {% if path_assinatura != 'None' %}
+                        <img class="img_ipem_data" src="{{ MEDIA_URL }}assinatura.png" alt="Imagem da assinatura do responsável pela divisão de Pré-Embalados">
+                        <div class="img-checkbox">
+                            {{ form.img_signt_checkbox.label_tag }}
+                            {{ form.img_signt_checkbox }}
+                        </div>
+                    {% endif %}
+                </div>
+                    {% if field.errors %}
+                    <div class="error-message-form">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+
+        </div>
+
+
+
         <div class="form-controls">
             <button type="submit" class="form-btn">Salvar</button>
             <button type="reset" class="form-btn">Cancelar</button>
@@ -15,6 +98,7 @@
         {% if form.errors %}
             <p class="error-message-form center">
                 Corrija o(s) erro(s) acima listado(s) e tente novamente
+                {{ form.errors }}
             </p>
             {% if form.non_field_errors %}
                 {% for error in form.non_field_errors %}

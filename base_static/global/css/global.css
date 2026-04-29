@@ -150,6 +150,10 @@ select{
     margin: auto 0 auto 1rem;
 }
 
+.img-checkbox{
+    margin: 0 0.8rem; 
+}
+
 /* Flash messages */
 .flash-message-container{
     display: flex;

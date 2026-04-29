@@ -5,7 +5,7 @@ from django.conf import settings
 
 def get_imgs_path():
     # Verifying if images exist
-    imgs = ['brasao', 'convenio']
+    imgs = ['brasao', 'convenio', 'assinatura']
     imgs_path = {}
 
     for img in imgs:

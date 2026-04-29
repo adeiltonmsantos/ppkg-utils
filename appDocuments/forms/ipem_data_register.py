@@ -49,6 +49,11 @@ class IpemDataRegisterForm(forms.Form):
         'TO': 'Tocantins'
     }
 
+    img_choices = {
+        's': 'Sim',
+        'n': 'Não'
+    }
+
     uf_ipem = forms.ChoiceField(
         label='Estado do IPEM',
         choices={' ': 'Selecione um estado', **uf_choices},
@@ -99,12 +104,45 @@ class IpemDataRegisterForm(forms.Form):
         }),
     )
 
+    img_uf_checkbox = forms.BooleanField(
+        required=False,
+        label='Apagar',
+        widget=forms.CheckboxInput(attrs={
+            'class': 'img-checkbox',
+        }),
+    )
+
     img_conv = forms.FileField(
         required=False,
         label='Imagem do convênio INMETRO/IPEM',
         widget=forms.FileInput(attrs={
             'class': 'form-file-input',
             'accept': 'image/*'
+        }),
+    )
+
+    img_conv_checkbox = forms.BooleanField(
+        required=False,
+        label='Apagar',
+        widget=forms.CheckboxInput(attrs={
+            'class': 'img-checkbox',
+        }),
+    )
+
+    img_signt = forms.FileField(
+        required=False,
+        label='Imagem da assinatura do responsável',
+        widget=forms.FileInput(attrs={
+            'class': 'form-file-input',
+            'accept': 'image/*'
+        }),
+    )
+
+    img_signt_checkbox = forms.BooleanField(
+        required=False,
+        label='Apagar',
+        widget=forms.CheckboxInput(attrs={
+            'class': 'img-checkbox',
         }),
     )
 
@@ -118,6 +156,7 @@ class IpemDataRegisterForm(forms.Form):
         name_ppkg_ipem = cleaned_data.get('name_ppkg_ipem')
         img_uf = self.files.get('img_uf')
         img_conv = self.files.get('img_conv')
+        img_signt = self.files.get('img_signt')
 
         # Validating uf_ipem
         if len(str(uf_ipem).strip()) == 0:
@@ -154,6 +193,8 @@ class IpemDataRegisterForm(forms.Form):
             self.errors_fields['img_uf'].append('O tamanho da imagem do brasão do estado não pode ser maior que 3MB')  # noqa: E501
         if img_conv and img_conv.size > (3 * 1024 * 1024):
             self.errors_fields['img_conv'].append('O tamanho da imagem do convênio INMETRO/IPEM não pode ser maior que 3MB')  # noqa: E501
+        if img_signt and img_signt.size > (3 * 1024 * 1024):
+            self.errors_fields['img_signt'].append('O tamanho da imagem do responsável não pode ser maior que 3MB')  # noqa: E501
 
         if self.errors_fields:
             raise ValidationError(self.errors_fields)
