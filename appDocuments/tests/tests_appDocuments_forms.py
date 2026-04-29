@@ -141,6 +141,7 @@ class AppDocumentsIntegrationTestForm(TestCase):
     @parameterized.expand([
         ('img_uf', 'brasao.png'),
         ('img_conv', 'convenio.png'),
+        ('img_signt', 'assinatura.png'),
     ])
     def test_upload_of_images(self, field_name, img_name):
         # Creating fake image
@@ -186,6 +187,7 @@ class AppDocumentsIntegrationTestForm(TestCase):
     @parameterized.expand([
         ('img_uf', 'O tamanho da imagem do brasão do estado não pode ser maior que 3MB'),  # noqa: E501
         ('img_conv', 'O tamanho da imagem do convênio INMETRO/IPEM não pode ser maior que 3MB'),  # noqa: E501
+        ('img_signt', 'O tamanho da imagem do responsável não pode ser maior que 3MB'),  # noqa: E501
     ])
     def test_if_size_of_images_are_allowed(self, field_name, msg_wanted):
         # Creating fake image
