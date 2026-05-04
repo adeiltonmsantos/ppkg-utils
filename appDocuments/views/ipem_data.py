@@ -1,8 +1,8 @@
 import json
 import os
-from pathlib import Path
 
-from django.apps import apps
+# from pathlib import Path
+# from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect, render
@@ -13,7 +13,7 @@ from appDocuments.forms import IpemDataRegisterForm
 from utils.appDocuments import get_imgs_path
 from utils.django_midia import saveImageAsPng
 
-JSON_PATH = Path(apps.get_app_config('appDocuments').path) / 'ipem-data.json'
+JSON_PATH = settings.JSON_IPEM_DATA_PATH
 
 
 class HomeView(TemplateView):
@@ -44,8 +44,7 @@ class IpemData(View):
 
     def get(self, *args, **kwargs):
         # Getting data in ipem-data.json
-        json_path = JSON_PATH
-        with open(json_path, 'r', encoding='utf-8') as file:
+        with open(JSON_PATH, 'r', encoding='utf-8') as file:
             form_data = json.load(file)
 
         form = IpemDataRegisterForm(form_data)
@@ -133,6 +132,7 @@ class IpemData(View):
             imgs_path = get_imgs_path()
             path_brasao = str(imgs_path['brasao'])
             path_convenio = str(imgs_path['convenio'])
+            path_assinatura = str(imgs_path['assinatura'])
 
             return self.render_template(
                 form=form,

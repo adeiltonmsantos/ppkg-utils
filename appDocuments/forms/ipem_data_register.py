@@ -1,12 +1,12 @@
 import json
+import os
 from collections import defaultdict
-from pathlib import Path
 
 from django import forms
-from django.apps import apps
+from django.conf import settings
 from django.core.exceptions import ValidationError
 
-JSON_PATH = Path(apps.get_app_config('appDocuments').path) / 'ipem-data.json'
+JSON_PATH = settings.JSON_IPEM_DATA_PATH
 
 
 def is_num_characters_valid(value, num_chars_valid):
@@ -155,8 +155,11 @@ class IpemDataRegisterForm(forms.Form):
         rs_ipem = cleaned_data.get('rs_ipem')
         name_ppkg_ipem = cleaned_data.get('name_ppkg_ipem')
         img_uf = self.files.get('img_uf')
+        img_uf_checkbox = self.files.get('img_uf_checkbox')
         img_conv = self.files.get('img_conv')
+        img_conv_checkbox = self.files.get('img_conv_checkbox')
         img_signt = self.files.get('img_signt')
+        img_signt_checkbox = self.files.get('img_signt_checkbox')
 
         # Validating uf_ipem
         if len(str(uf_ipem).strip()) == 0:
