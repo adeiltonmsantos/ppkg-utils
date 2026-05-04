@@ -12,3 +12,8 @@ class appDocumentsUrlTest(SimpleTestCase):
         url = reverse('appDocuments:ipem-data-send')
         url_wanted = '/documents/ipem_data/'
         self.assertEqual(url, url_wanted)
+    
+    def test_high_error_dispatch_url_is_correct(self):
+        url = reverse('appDocuments:high-error-dispatch')
+        url_wanted = '/documents/high-error-dispatch'
+        self.assertEqual(url, url_wanted)
