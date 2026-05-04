@@ -9,14 +9,28 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 from django.contrib.messages import constants
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Ipem data JSON path
+JSON_IPEM_DATA_PATH = BASE_DIR / 'appDocuments' / os.getenv('JSON_IPEM_DATA')
+
+# Coat of arms image path
+COAT_ARMS_IMAGE_PATH = BASE_DIR / 'media' / os.getenv('COAT_ARMS_IMAGE')
+
+# Agreement between IPEM and INMETRO image path
+AGREEMNET_IMAGE_PATH = BASE_DIR / 'media' / os.getenv('AGREEMENT_IMAGE')
+
+# Signature of person in charge image path
+IN_CHARGE_IMAGE_PATH = BASE_DIR / 'media' / os.getenv('IN_CHARGE_SIGNATURE')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
