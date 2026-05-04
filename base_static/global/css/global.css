@@ -36,7 +36,7 @@ input, select{
 /* Header */
 .header{
     background-color: #07053A;
-    height: var(--header-footer-height);
+    height: var(--header-footer-height), Arial;
     display: flex;
     padding: 1rem 3.5rem;
 }
@@ -55,7 +55,7 @@ input, select{
     font-size: 8rem;
     font-weight: normal;
     color: #fff;
-    font-family: var(--font-title), Arial;
+    font-family: var(--font-title);
 }
 
 /* Main container */
