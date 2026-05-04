@@ -16,4 +16,9 @@ urlpatterns = [
         views.IpemData.as_view(),
         name='ipem-data-receive'
     ),
+    path(
+        'high-error-dispatch',
+        views.HighErrorDispatch.as_view(),
+        name='high-error-dispatch'
+    ),
 ]
