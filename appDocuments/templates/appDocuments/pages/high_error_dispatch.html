@@ -1,0 +1,40 @@
+{% extends "global/pages/base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+{% block content %}
+{% csrf_token %}
+{% include "global/partials/messages.html" %}
+{% load static %}
+<div class="form-container">
+    <h2>{{ title_form }}</h2>
+    <form action="{% url "appDocuments:ipem-data-receive" %}" method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+        <div class="fields-container">
+
+
+
+
+        </div>
+
+
+
+        <div class="form-controls">
+            <button type="submit" class="form-btn">Salvar</button>
+            <button type="reset" class="form-btn">Cancelar</button>
+        </div>
+        {% if form.errors %}
+            <p class="error-message-form center">
+                Corrija o(s) erro(s) acima listado(s) e tente novamente
+                {{ form.errors }}
+            </p>
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <p>
+                        {{ error }}                        
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </form>
+</div>
+{% endblock content %}
