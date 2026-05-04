@@ -77,23 +77,16 @@ class AppDocumentsIntegrationTestForm(TestCase):
             'rs_ipem': 'Instituto de Pesos e Medidas',
             'name_ppkg_ipem': 'Divisão de Pré-Embalados',
             'uf_img': '',
-            'img_conv': ''
+            'uf_img_checkbox': False,
+            'img_conv': '',
+            'img_conv_checkbox': False,
+            'img_signt': '',
+            'img_signt_checkbox': False,
         }
 
         return super().setUp()
 
     def make_fake_image(self, img_name, size_mb=None):
-        # # Creating image in memory
-        # image = Image.new('RGB', (50, 50), color='green')
-        # img_io = io.BytesIO()
-        # image.save(img_io, format='JPEG')
-
-        # return SimpleUploadedFile(
-        #     f'{img_name}.jpg',
-        #     img_io.getvalue(),
-        #     content_type='image/jpeg'
-        # )
-
         # 1. Cria a imagem básica em memória
         img_format = 'JPEG'
         image = Image.new('RGB', (50, 50), color='green')
@@ -168,10 +161,32 @@ class AppDocumentsIntegrationTestForm(TestCase):
             msg=f"File '{img_name}' doesn't exist"
         )
 
+    @parameterized.expand([
+        ('img_uf', 'img_uf_checkbox', 'brasao.png'),
+        ('img_conv', 'img_conv_checkbox', 'convenio.png'),
+        ('img_signt', 'img_signt_checkbox', 'assinatura.png'),
+    ])
+    def test_if_image_is_deleted(self, field_name, field_delete_name, img_name):
+        # URL of the view function that validate form
+        url = reverse('appDocuments:ipem-data-receive')
+
+        # Creating a fake image
+        fake_image = self.make_fake_image('fake_image')
+
+        # Saving image via post
+        self.form_data[field_name] = fake_image
+        self.client.post(
+            url,
+            data=self.form_data,
+            follow=True,
+            format='multipart'
+        )
+
         # Testing if form post without image erases it
         self.form_data[field_name] = ''
+        self.form_data[field_delete_name] = True
 
-        # Posting form without image
+        # Trying to delete image via POST
         self.client.post(
             url,
             data=self.form_data,
