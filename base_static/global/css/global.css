@@ -55,7 +55,7 @@ input, select{
     font-size: 8rem;
     font-weight: normal;
     color: #fff;
-    font-family: var(--font-title);
+    font-family: var(--font-title), Arial;
 }
 
 /* Main container */
