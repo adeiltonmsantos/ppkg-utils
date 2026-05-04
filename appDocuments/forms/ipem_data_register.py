@@ -1,5 +1,4 @@
 import json
-import os
 from collections import defaultdict
 
 from django import forms
@@ -155,11 +154,8 @@ class IpemDataRegisterForm(forms.Form):
         rs_ipem = cleaned_data.get('rs_ipem')
         name_ppkg_ipem = cleaned_data.get('name_ppkg_ipem')
         img_uf = self.files.get('img_uf')
-        img_uf_checkbox = self.files.get('img_uf_checkbox')
         img_conv = self.files.get('img_conv')
-        img_conv_checkbox = self.files.get('img_conv_checkbox')
         img_signt = self.files.get('img_signt')
-        img_signt_checkbox = self.files.get('img_signt_checkbox')
 
         # Validating uf_ipem
         if len(str(uf_ipem).strip()) == 0:
