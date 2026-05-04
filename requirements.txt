@@ -7,6 +7,7 @@ cryptography==47.0.0
 defusedxml==0.7.1
 Django==6.0.2
 docopt==0.6.2
+dotenv==0.9.9
 fonttools==4.62.1
 fpdf2==2.8.7
 iniconfig==2.3.0
@@ -25,6 +26,7 @@ pytest==9.0.2
 pytest-django==4.11.1
 pytest-watch==4.2.0
 python-dateutil==2.9.0.post0
+python-dotenv==1.2.2
 six==1.17.0
 sqlparse==0.5.5
 watchdog==6.0.0
