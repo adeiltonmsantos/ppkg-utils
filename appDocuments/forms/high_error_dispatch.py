@@ -5,6 +5,24 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 
+# Overwriting ClearableFileInput
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+# Creating field to accept multile files upload
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+    
 class HighErrorDispatchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,15 +40,16 @@ class HighErrorDispatchForm(forms.Form):
         )
     )
 
-    dispatch_pdf = forms.FileField(
-        required=True,
-        label='Faça upload de um ou mais PDFs',
-        widget=forms.FileInput(
+    dispatch_pdf = MultipleFileField(
+        widget=MultipleFileInput(
             attrs={
+                'multiple': True,
                 'class': 'form-file-input',
-                'accept': 'application/pdf'
+                'accept': 'application/pdf',
             }
         ),
+        required=True,
+        label='Faça upload de um ou mais PDFs',
     )
 
     def clean(self):
