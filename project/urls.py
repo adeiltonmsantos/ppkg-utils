@@ -3,7 +3,10 @@ from django.conf.urls.static import static
 from django.contrib import admin  # type: ignore
 from django.urls import include, path  # type: ignore
 
+from appDocuments.views import HomeView
+
 urlpatterns = [
+    path('', HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('documents/', include('appDocuments.urls'))
 ]
