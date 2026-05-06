@@ -35,8 +35,9 @@ class HighErrorDispatchForm(forms.Form):
 
     def clean(self):
         superclean = super().clean()
-        dispatch_date = self.cleaned_data.get('dispatch_date')
-        dispatch_pdf = self.files.get('dispatch_pdf')
+        obj_dt = self.cleaned_data.get('dispatch_date')
+        dispatch_date = f'{obj_dt.day}/{obj_dt.month}/{obj_dt.year}'
+        # dispatch_pdf = self.files.get('dispatch_pdf')
 
         # Validating date
         valid_date = False
