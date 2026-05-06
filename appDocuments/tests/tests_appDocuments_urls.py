@@ -4,8 +4,8 @@ from django.urls import reverse
 
 class appDocumentsUrlTest(SimpleTestCase):
     def test_appDocuments_home_url_is_correct(self):
-        url = reverse('appDocuments:home')
-        url_wanted = '/documents/'
+        url = reverse('home')
+        url_wanted = '/'
         self.assertEqual(url, url_wanted)
 
     def test_appDocuments_ipem_data_url_is_correct(self):
