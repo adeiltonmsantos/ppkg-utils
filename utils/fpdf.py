@@ -1,8 +1,8 @@
-import fpdf
+from fpdf import FPDF
 from PIL import Image
 
 
-class PDF(fpdf):
+class PDF(FPDF):
   def __init__(self):
     super().__init__()
     self.add_page()
