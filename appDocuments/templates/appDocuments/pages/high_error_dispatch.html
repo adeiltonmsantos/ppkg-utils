@@ -10,13 +10,13 @@
 
         {% csrf_token %}
         <div class="fields-container">
-
-
-
-
+            {% for field in form %}
+                <div class="form-field-collumn">
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endfor %}
         </div>
-
-
 
         <div class="form-controls">
             <button type="submit" class="form-btn">Salvar</button>
