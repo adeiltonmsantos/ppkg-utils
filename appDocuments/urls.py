@@ -5,7 +5,6 @@ from . import views
 app_name = 'appDocuments'
 
 urlpatterns = [
-    path('', views.HomeView.as_view(), name='home'),
     path(
         'ipem_data/',
         views.IpemData.as_view(),
