@@ -13,7 +13,8 @@
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": "explicit"
+      "source.fixAll.ruff": "always",
+      "source.organizeImports.ruff": "always"
     }
   },
   "[html]": {
@@ -50,5 +51,5 @@
     "django-html": "html", // batisteo.vscode-django
     "javascript": "javascriptreact",
     "typescript": "typescriptreact"
-  }
+  },
 }
