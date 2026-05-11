@@ -4,7 +4,7 @@ import pandas as pd
 import pdfplumber as p
 
 
-class Laudo():
+class ExamReport():
     """
     classe Laudo(): Instancia um laudo genérico. Deve ser instanciada apenas
     para extração de dados com o método 'loadRawData()' e determinar o tipo
@@ -15,10 +15,10 @@ class Laudo():
     """
 
     def __init__(self):
-        self.num_laudo = None
-        self.tipo_exame = None
-        self.nome_prod = None
-        self.marca_prod = None
+        self.exam_report_num = None
+        self.exam_report_type = None
+        self.product_name = None
+        self.product_brand = None
         self.qn_prod = None
         self.unid_prod = None
         self.unid_exame = None
@@ -47,31 +47,35 @@ class Laudo():
         self.df_medicoes = None
 
     # Carrega para a propriedade list_raw_data o conteúdo bruto do PDF do laudo
-    def loadRawData(self, url_laudo):
+    def loadRawData(self, url_or_object_file):
         # Resetando dados de laudo anterior
         self.__init__()
 
-        # Carregando todo o conteúdo do laudo
-        pdf = p.open(url_laudo)
+        try:
+            # Carregando todo o conteúdo do laudo
+            pdf = p.open(url_or_object_file)
 
-        # Extraindo as páginas para um iterável
-        pgs = pdf.pages
+            # Extraindo as páginas para um iterável
+            pgs = pdf.pages
 
-        # Lista para receber todas as linhas das tabelas do PDF
-        tbls = []
+            # Lista para receber todas as linhas das tabelas do PDF
+            tbls = []
 
-        # Varrendo todas as páginas para extrair as tabelas
-        for pg in pgs:
-            tbls += pg.extract_tables()
+            # Varrendo todas as páginas para extrair as tabelas
+            for pg in pgs:
+                tbls += pg.extract_tables()
 
-        # Varrendo as tabelas para extrair suas linhas para list_raw_data
-        for tb in tbls:
-            for row in tb:
-                self.list_raw_data.append(row)
+            # Varrendo as tabelas para extrair suas linhas para list_raw_data
+            for tb in tbls:
+                for row in tb:
+                    self.list_raw_data.append(row)
+            return True
+        except Exception:
+            return False
 
     # Retorna o tipo de exame e o atribui à 'tipo_exame'
     def getTipoExame(self):
-        if self.tipo_exame is None:
+        if self.exam_report_type is None:
             self._getString1()
             STRING = self._string1
 
@@ -86,16 +90,16 @@ class Laudo():
 
                 match cod:
                     case 'g':
-                        self.tipo_exame = 'm'
+                        self.exam_report_type = 'm'
                     case 'l':
-                        self.tipo_exame = 'v'
+                        self.exam_report_type = 'v'
                     case 'm':
-                        self.tipo_exame = 'c'
+                        self.exam_report_type = 'c'
 
             except Exception:
-                self.tipo_exame = 'u'
+                self.exam_report_type = 'u'
 
-            return self.tipo_exame
+            return self.exam_report_type
 
     def getTC(self):
         # data = self.list_raw_data
@@ -197,23 +201,23 @@ class Laudo():
 
         # nome_prod
         try:
-            self.nome_prod = self._getValueBetweenStrings(
+            self.product_name = self._getValueBetweenStrings(
                string.upper(),
                'PRODUTO: ',
                ' CÓDIGO: '
             )
         except Exception:
-            self.nome_prod = None
+            self.product_name = None
 
         # marca_prod
         try:
-            self.marca_prod = self._getValueBetweenStrings(
+            self.product_brand = self._getValueBetweenStrings(
                string.upper(),
                'MARCA: ',
                ' FATOR DE CORREÇÃO:'
             )
         except Exception:
-            self.marca_prod = None
+            self.product_brand = None
 
         # qn_prod, unid_prod
         try:
@@ -256,7 +260,7 @@ class Laudo():
             for item in row:
                 if item is not None and 'NÚMERO DO LAUDO:' in item.upper():
                     lst_num = item.split(' ')
-                    self.num_laudo = lst_num[3]
+                    self.exam_report_num = lst_num[3]
 
         # c
         try:
@@ -354,10 +358,10 @@ class Laudo():
         total_T3 = self.total_T3
 
         # Início do texto a ser definido se houver erros
-        txt_erros_start = f'o produto {self.nome_prod.upper()}, marca {self.marca_prod.upper()}, examinad'  # noqa:E501
+        txt_erros_start = f'o produto {self.product_name.upper()}, marca {self.product_brand.upper()}, examinad'  # noqa:E501
         txt_erros_start += f'o em nosso laboratório em {self.data_exame} é passível de a'  # noqa:E501
         txt_erros_start += f'preensão pois referente ao conteúdo nominal {self.qn_prod} '  # noqa:E501
-        txt_erros_start += f'{self.unid_exame} determinado no laudo n.º {self.num_laudo} '  # noqa:E501
+        txt_erros_start += f'{self.unid_exame} determinado no laudo n.º {self.exam_report_num} '  # noqa:E501
 
         # String com o texto completo, se houver erros
         txt_erros = ''
@@ -383,7 +387,7 @@ class Laudo():
         return txt_erros
 
 
-class LaudoMassa(Laudo):
+class ExamReportMass(ExamReport):
     def __init__(self):
         super().__init__()
 
@@ -435,7 +439,7 @@ class LaudoMassa(Laudo):
             return self.lista_medicoes
 
 
-class LaudoVolume(Laudo):
+class ExamReportVol(ExamReport):
     def __init__(self):
         super().__init__()
 
@@ -505,7 +509,7 @@ class LaudoVolume(Laudo):
         return self.lista_medicoes
 
 
-class LaudoComp(Laudo):
+class ExamReportLength(ExamReport):
     def __init__(self):
         super().__init__()
 
@@ -593,7 +597,7 @@ class LaudoComp(Laudo):
         return self.lista_medicoes
 
 
-class LaudoUnid(Laudo):
+class ExamReportUnit(ExamReport):
     def __init__(self):
         super().__init__()
 
@@ -608,7 +612,7 @@ class LaudoUnid(Laudo):
         super().loadProdData()
 
         # marca_prod
-        self.marca_prod = self._getValueBetweenStrings(
+        self.product_brand = self._getValueBetweenStrings(
             string.upper(),
             'MARCA: ',
             '\nCONTEÚDO NOMINAL'
