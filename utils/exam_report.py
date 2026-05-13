@@ -74,36 +74,28 @@ class ExamReport():
             return False
 
     # Retorna o tipo de exame e o atribui à 'tipo_exame'
-    def getTipoExame(self):
+    def getExamType(self):
         if self.exam_report_type is None:
-            self._getString1()
-            STRING = self._string1
-
+            raw_data = self.list_raw_data
             try:
-                string = self._getValueBetweenStrings(
-                   STRING,
-                   'Conteúdo Nominal: ',
-                   ' Massa Específica'
-                )
-                lst = string.split(' ')
-                cod = lst[1][-1].lower()
-
-                match cod:
-                    case 'g':
-                        self.exam_report_type = 'm'
-                    case 'l':
-                        self.exam_report_type = 'v'
-                    case 'm':
-                        self.exam_report_type = 'c'
-
-            except Exception:
-                self.exam_report_type = 'u'
-
-            return self.exam_report_type
+                for item in raw_data:
+                    # Exam type is 'number of units'
+                    if 'Unidade amostral' in str(item[0]):
+                        return 'u'
+                    elif 'Unidade nº' in str(item[0]):
+                        # Removing all the blank spaces from string item
+                        item = str(item).replace(' ', '').lower()
+                        if 'ml' in item:
+                            return 'v'
+                        if '(g)' in item:
+                            return 'm'
+                        if '(cm)' in item:
+                            return 'c'
+            except Exception as e:
+                print(repr(e))
+                return False
 
     def getTC(self):
-        # data = self.list_raw_data
-
         string = self._getDataByString('Termo de Coleta')
         if len(string) > 0:
             lst_tmp = string.split('Matr. Metrol.:')
@@ -112,6 +104,7 @@ class ExamReport():
             tmp = tmp[1].strip()
 
         self.tc = tmp
+        return tmp
 
     # Método protegido que dada uma string chave 'str_key' varre list_raw_data
     # em busca da string que a contém
