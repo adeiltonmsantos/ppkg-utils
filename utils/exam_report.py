@@ -6,7 +6,7 @@ import pdfplumber as p
 
 class ExamReport():
     """
-    classe Laudo(): Instancia um laudo genérico. Deve ser instanciada apenas
+    class ExamReport(): Instancia um laudo genérico. Deve ser instanciada apenas
     para extração de dados com o método 'loadRawData()' e determinar o tipo
     de exame do laudo ('m': massa, 'v': volume: 'c': comprimento/largura/
     altura ou'u': unidade). Demais ações devem ser realizadas com suas
@@ -19,21 +19,21 @@ class ExamReport():
         self.exam_report_type = None
         self.product_name = None
         self.product_brand = None
-        self.qn_prod = None
-        self.unid_prod = None
-        self.unid_exame = None
-        self.data_exame = None
+        self.qn_product = None
+        self.unit_product = None
+        self.unit_exam = None
+        self.exam_report_date = None
         self.tc = None  # Termo de coleta
         self.n = None  # Tamanho da amostra
         self.c = None  # Critério de aceitação individual
         self.T = None  # Tolerância individual (erro tipo T1)
         self.T3 = None  # Erro tipo T3
-        self.total_defeituosos = None  # Total de unidades com erro tipo T1
+        self.total_defective = None  # Total de unidades com erro tipo T1
         self.total_T3 = None  # Total de unidades com erro tipo T3
-        self.valor_min_indiv = None  # Qn - T
-        self.valor_erro_T3 = None  # Qn - 3.T
-        self.media_min = None
-        self.perc_defeituosos = None
+        self.min_individual_value = None  # Qn - T
+        self.T3_error_value = None  # Qn - 3.T
+        self.min_average = None
+        self.perc_defective = None
         self.list_raw_data = []
         # String para extrair informações do produto (nome, marca, Qn)
         self._string1 = None
@@ -42,7 +42,7 @@ class ExamReport():
         # String para extrair n.º defeituosas encontradas e média mínima
         self._string3 = None
         # Lista com linhas das string de medições
-        self.lista_medicoes = []
+        self.mesurements_list = []
         # DataFrame Pandas com as medições de 'lista_medicoes'
         self.df_medicoes = None
 
@@ -69,7 +69,12 @@ class ExamReport():
             for tb in tbls:
                 for row in tb:
                     self.list_raw_data.append(row)
-            return True
+
+            str_wanted = 'SERVIÇO PÚBLICO FEDERAL\nMINISTÉRIO DO DESENVOLVIMENTO, INDÚSTRIA, COMÉRCIO E SERVIÇOS\nINSTITUTO NACIONAL DE METROLOGIA, QUALIDADE E TECNOLOGIA'  # noqa: E501
+            if str_wanted in self.list_raw_data[0][0]:
+                return True
+            else:
+                return False
         except Exception:
             return False
 
@@ -106,7 +111,7 @@ class ExamReport():
         self.tc = tmp
         return tmp
 
-    # Método protegido que dada uma string chave 'str_key' varre list_raw_data
+    # Método protegido que dada uma string chave 'str_key' varre 'list_raw_data'
     # em busca da string que a contém
     def _getDataByString(self, str_key):
         for item in self.list_raw_data:
@@ -161,11 +166,11 @@ class ExamReport():
             if row[0] is not None and 'Produto: ' in row[0]:
                 linhas_com_medicoes = False
             if linhas_com_medicoes and len(row[0]) > 2:
-                self.lista_medicoes.append(row[0])
+                self.mesurements_list.append(row[0])
             if row[0] is not None and 'Unidade nº ' in row[0]:
                 linhas_com_medicoes = True
 
-        return self.lista_medicoes
+        return self.mesurements_list
 
     # Transforma o conteúdo de lista_medicoes em dataframe Pandas
     def getMedicoesDataFrame(self):
@@ -175,10 +180,10 @@ class ExamReport():
         """
 
         # Carregando 'lista_medicoes'
-        if self.lista_medicoes == []:
+        if self.mesurements_list == []:
             data = self._getListaMedicoes()
         else:
-            data = self.lista_medicoes
+            data = self.mesurements_list
 
         # Transformando 'lista_medicoes' em dataframe Pandas
         self.df_medicoes = pd.DataFrame(
@@ -220,11 +225,11 @@ class ExamReport():
                ' MASSA ESPECÍFICA'
             ).lower()
             lst_qn = str_qn.split(' ')
-            self.qn_prod = lst_qn[0]
-            self.unid_prod = lst_qn[1]
+            self.qn_product = lst_qn[0]
+            self.unit_product = lst_qn[1]
         except Exception:
-            self.qn_prod = None
-            self.unid_prod = None
+            self.qn_product = None
+            self.unit_product = None
 
         # unid_exame
         try:
@@ -236,24 +241,30 @@ class ExamReport():
                '\nRESULTADO'
             )
             lst_un_ex = str_un_ex.split(' ')
-            self.unid_exame = lst_un_ex[1].lower()
+            self.unit_exam = lst_un_ex[1].lower()
         except Exception:
-            self.unid_exame = None
+            self.unit_exam = None
 
         # data_exame e num_laudo
         rows = self.list_raw_data
         for row in rows:
-            # 'Data e Hora do Exame: 08/01/2025 11h00min'
-            if row[1] is not None and 'Data e Hora do Exame:' in row[1]:
-                lst_date = row[1].split(' ')
-            self.data_exame = lst_date[5]
-            if row[2] is not None and 'Data e Hora do Exame:' in row[2]:
-                lst_date = row[2].split(' ')
-                self.data_exame = lst_date[5]
-            for item in row:
-                if item is not None and 'NÚMERO DO LAUDO:' in item.upper():
-                    lst_num = item.split(' ')
-                    self.exam_report_num = lst_num[3]
+            try:
+                if row[1] is not None and 'Data e Hora do Exame:' in row[1]:
+                    lst_date = row[1].split(' ')
+                    self.exam_report_date = lst_date[5]
+                if row[2] is not None and 'Data e Hora do Exame:' in row[2]:
+                    lst_date = row[2].split(' ')
+                    self.exam_report_date = lst_date[5]
+            except Exception:
+                self.exam_report_date = None
+
+            try:
+                for item in row:
+                    if item is not None and 'NÚMERO DO LAUDO:' in item.upper():
+                        lst_num = item.split(' ')
+                        self.exam_report_num = lst_num[3]
+            except Exception:
+                self.exam_report_num = None
 
         # c
         try:
@@ -288,13 +299,13 @@ class ExamReport():
             string = self._string3
             str1 = 'DEFEITUOSAS ENCONTRADAS: '
             str2 = '\nVALOR'
-            self.total_defeituosos = int(self._getValueBetweenStrings(
+            self.total_defective = int(self._getValueBetweenStrings(
                string.upper(),
                str1,
                str2)
             )
         except Exception:
-            self.total_defeituosos = None
+            self.total_defective = None
 
         # valor_min_indiv (Qn - T)
         try:
@@ -304,9 +315,9 @@ class ExamReport():
             str2 = ' G'
             strV = self._getValueBetweenStrings(string.upper(), str1, str2)
             strV = strV.replace(',', '.')
-            self.valor_min_indiv = float(strV)
+            self.min_individual_value = float(strV)
         except Exception:
-            self.valor_min_indiv = None
+            self.min_individual_value = None
 
         # T
         try:
@@ -321,20 +332,36 @@ class ExamReport():
             self.T = None
 
         # perc_defeituosos
-        df = self.total_defeituosos
-        n = self.n
-        self.perc_defeituosos = int(math.ceil((df * 100)/n))
+        try:
+            df = self.total_defective
+            n = self.n
+            self.perc_defective = int(math.ceil((df * 100)/n))
+        except Exception:
+            self.perc_defective = None
 
     # Calcula 'total_T3' e 'valor_erro_T3'. Só deve ser chamado pelo método
     # 'loadProdData' nas classes filhas
-    def _getValoresT3(self):
+    def _getT3Values(self):
         # valor_erro_T3
-        self.valor_erro_T3 = float(self.valor_min_indiv - 2 * self.T)
+        try:
+            self.T3_error_value = float(self.min_individual_value - 2 * self.T)
+        except Exception:
+            self.T3_error_value = None
 
         # total_T3
-        df = self.getMedicoesDataFrame()
-        df_def = df.query('Cont_liq < @self.valor_erro_T3')
-        self.total_T3 = len(df_def)
+        try:
+            df = self.getMedicoesDataFrame()
+            df_def = df.query('Cont_liq < @self.T3_error_value')
+            self.total_T3 = len(df_def)
+        except Exception:
+            self.total_T3 = None
+
+    def isSubjectToDispatch(self):
+        try:
+            self.loadProdData()
+            return self.perc_defective > 30
+        except Exception as e:
+            print(repr(e))
 
     def getErrosTxt(self):
         """
@@ -345,16 +372,16 @@ class ExamReport():
         """
 
         # Percentual de erro T1
-        perc_T1 = self.perc_defeituosos
+        perc_T1 = self.perc_defective
 
         # Total de erros T3
         total_T3 = self.total_T3
 
         # Início do texto a ser definido se houver erros
         txt_erros_start = f'o produto {self.product_name.upper()}, marca {self.product_brand.upper()}, examinad'  # noqa:E501
-        txt_erros_start += f'o em nosso laboratório em {self.data_exame} é passível de a'  # noqa:E501
-        txt_erros_start += f'preensão pois referente ao conteúdo nominal {self.qn_prod} '  # noqa:E501
-        txt_erros_start += f'{self.unid_exame} determinado no laudo n.º {self.exam_report_num} '  # noqa:E501
+        txt_erros_start += f'o em nosso laboratório em {self.exam_report_date} é passível de a'  # noqa:E501
+        txt_erros_start += f'preensão pois referente ao conteúdo nominal {self.qn_product} '  # noqa:E501
+        txt_erros_start += f'{self.unit_exam} determinado no laudo n.º {self.exam_report_num} '  # noqa:E501
 
         # String com o texto completo, se houver erros
         txt_erros = ''
@@ -393,7 +420,7 @@ class ExamReportMass(ExamReport):
 
         # Chamando método da classe pai para carregar os valores
         # 'valor_erro_T3' e 'total_T3'
-        super()._getValoresT3()
+        super()._getT3Values()
 
     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
     # das strings
@@ -402,7 +429,7 @@ class ExamReportMass(ExamReport):
         super()._getListaMedicoes()
 
         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.lista_medicoes
+        rows = self.mesurements_list
         lst_tmp = []
 
         # Varrendo rows
@@ -428,8 +455,8 @@ class ExamReportMass(ExamReport):
             else:
                 lst_tmp.append([lst[size-1], 0])
 
-            self.lista_medicoes = lst_tmp
-            return self.lista_medicoes
+            self.mesurements_list = lst_tmp
+            return self.mesurements_list
 
 
 class ExamReportVol(ExamReport):
@@ -444,26 +471,32 @@ class ExamReportVol(ExamReport):
         super().loadProdData()
 
         # T
-        self._getString2()
-        string = self._string2
-        str1 = 'TOLERÂNCIA INDIVIDUAL: '
-        str2 = ' M'
-        strT = self._getValueBetweenStrings(string.upper(), str1, str2)
-        strT = strT.replace(',', '.')
-        self.T = float(strT)
+        try:
+            self._getString2()
+            string = self._string2
+            str1 = 'TOLERÂNCIA INDIVIDUAL: '
+            str2 = ' M'
+            strT = self._getValueBetweenStrings(string.upper(), str1, str2)
+            strT = strT.replace(',', '.')
+            self.T = float(strT)
+        except Exception:
+            self.T = None
 
         # valor_min_indiv (Qn - T)
-        self._getString3()
-        string = self._string3
-        str1 = 'VALOR MÍN. INDIVIDUAL: '
-        str2 = ' ML'
-        strV = self._getValueBetweenStrings(string.upper(), str1, str2)
-        strV = strV.replace(',', '.')
-        self.valor_min_indiv = float(strV)
+        try:
+            self._getString3()
+            string = self._string3
+            str1 = 'VALOR MÍN. INDIVIDUAL: '
+            str2 = ' ML'
+            strV = self._getValueBetweenStrings(string.upper(), str1, str2)
+            strV = strV.replace(',', '.')
+            self.min_individual_value = float(strV)
+        except Exception:
+            self.min_individual_value = None
 
         # Chamando método da classe pai para carregar os valores
         # 'valor_erro_T3' e 'total_T3'
-        super()._getValoresT3()
+        super()._getT3Values()
 
     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
     #  das strings
@@ -472,7 +505,7 @@ class ExamReportVol(ExamReport):
         super()._getListaMedicoes()
 
         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.lista_medicoes
+        rows = self.mesurements_list
         lst_tmp = []
 
         # Varrendo rows
@@ -498,8 +531,8 @@ class ExamReportVol(ExamReport):
             else:
                 lst_tmp.append([lst[size-1], 0])
 
-        self.lista_medicoes = lst_tmp
-        return self.lista_medicoes
+        self.mesurements_list = lst_tmp
+        return self.mesurements_list
 
 
 class ExamReportLength(ExamReport):
@@ -523,7 +556,7 @@ class ExamReportLength(ExamReport):
             '\nRESULTADO'
         )
         lst_un_ex = str_un_ex.split(' ')
-        self.unid_exame = lst_un_ex[1].lower()
+        self.unit_exam = lst_un_ex[1].lower()
 
         # T
         self._getString2()
@@ -547,11 +580,11 @@ class ExamReportLength(ExamReport):
         except Exception:
             strV = self._getValueBetweenStrings(string.upper(), str1, ' MM')
         strV = strV.replace(',', '.')
-        self.valor_min_indiv = float(strV)
+        self.min_individual_value = float(strV)
 
         # Chamando método da classe pai para carregar os valores
         # 'valor_erro_T3' e 'total_T3'
-        super()._getValoresT3()
+        super()._getT3Values()
 
     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
     # das strings
@@ -560,7 +593,7 @@ class ExamReportLength(ExamReport):
         super()._getListaMedicoes()
 
         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.lista_medicoes
+        rows = self.mesurements_list
         lst_tmp = []
 
         # Varrendo rows
@@ -586,8 +619,8 @@ class ExamReportLength(ExamReport):
             else:
                 lst_tmp.append([lst[size-1], 0])
 
-        self.lista_medicoes = lst_tmp
-        return self.lista_medicoes
+        self.mesurements_list = lst_tmp
+        return self.mesurements_list
 
 
 class ExamReportUnit(ExamReport):
@@ -618,10 +651,10 @@ class ExamReportUnit(ExamReport):
             '\nTEMPERATURA'
         ).lower()
         lst_qn = str_qn.split(' ')
-        self.qn_prod = lst_qn[0]
+        self.qn_product = lst_qn[0]
 
         # unid_prod
-        self.unid_prod = 'un.'
+        self.unit_product = 'un.'
 
         # T
         self._getString2()
@@ -636,7 +669,7 @@ class ExamReportUnit(ExamReport):
         string = self._string3
         str1 = 'VALOR MÍN. INDIVIDUAL: '
         str2 = ' UN.'
-        self.valor_min_indiv = int(self._getValueBetweenStrings(
+        self.min_individual_value = int(self._getValueBetweenStrings(
             string.upper(),
             str1,
             str2)
@@ -644,7 +677,7 @@ class ExamReportUnit(ExamReport):
 
         # Chamando método da classe pai para carregar os valores
         # 'valor_erro_T3' e 'total_T3'
-        super()._getValoresT3()
+        super()._getT3Values()
 
     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
     # das strings
@@ -673,11 +706,11 @@ class ExamReportUnit(ExamReport):
 
             # row tem 3 itens (índice, cont. efet. e cont. efet.)
             if len(row) == 3:
-                self.lista_medicoes.append(row[2:] + [0])
+                self.mesurements_list.append(row[2:] + [0])
             # row tem 4 itens  (índice, cont. efet., cont. efet., n.º defeit.)
             elif len(row) == 4:
-                self.lista_medicoes.append(row[2:])
+                self.mesurements_list.append(row[2:])
             if row[0] is not None and 'UNIDADE AMOSTRAL' in str(row[0]).upper():  # noqa:E501
                 linhas_com_medicoes = True
 
-        return self.lista_medicoes
+        return self.mesurements_list
