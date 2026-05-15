@@ -1,6 +1,4 @@
-import io
 import os
-from pathlib import Path
 
 from django.conf import settings
 
@@ -32,41 +30,35 @@ def get_imgs_path():
 
     return imgs_path
 
-def loadExamReportPDF(pdf_name):
-    # Exam report path to test
-    pdf_folder = Path(__file__).parent / 'tests/reports_to_test'
-    pdf_path = pdf_folder / pdf_name
-
-    # Trying to load to memory a PDF file to test
-    try:
-        with open(pdf_path, 'rb') as f:
-            pdf_file = io.BytesIO(f.read())
-            return pdf_file
-    except Exception:
-        return False
-
-def getExamReportObjectByType(filename):
-    # Loading to memory a PDF file to test
-    pdf_file = loadExamReportPDF(filename)
+def getExamReportObjectByType(pdf_file_object):
+    """
+    getExamReportObjectByType(filename)
+    Returns a child object of ExamReport (ExamReportMass, ExamReportVol, etc.) given the name of a PDF object file.
+    If the PDF object file isn't a valid exam report returns False
+    """
     er = ExamReport()
-    er.loadRawData(pdf_file)
-    type = er.getExamType()
-    match type:
-        case 'c':
-            er = ExamReportLength()
-            er.loadRawData(pdf_file)
-            er.loadProdData()
-        case 'u':
-            er = ExamReportUnit()
-            er.loadRawData(pdf_file)
-            er.loadProdData()
-        case 'm':
-            er = ExamReportMass()
-            er.loadRawData(pdf_file)
-            er.loadProdData()
-        case 'v':
-            er = ExamReportVol()
-            er.loadRawData(pdf_file)
-            er.loadProdData()
-    if er:
-        return er
+    exam_report_valid = er.loadRawData(pdf_file_object)
+
+    if exam_report_valid:
+        type = er.getExamType()
+        match type:
+            case 'c':
+                er = ExamReportLength()
+                er.loadRawData(pdf_file_object)
+                er.loadProdData()
+            case 'u':
+                er = ExamReportUnit()
+                er.loadRawData(pdf_file_object)
+                er.loadProdData()
+            case 'm':
+                er = ExamReportMass()
+                er.loadRawData(pdf_file_object)
+                er.loadProdData()
+            case 'v':
+                er = ExamReportVol()
+                er.loadRawData(pdf_file_object)
+                er.loadProdData()
+        if er:
+            return er
+    else:
+        return False
