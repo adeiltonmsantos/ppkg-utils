@@ -1,48 +1,58 @@
+import io
+from pathlib import Path
 from unittest import TestCase
 
 from parameterized import parameterized
 
-from utils.appDocuments import getExamReportObjectByType, loadExamReportPDF
-from utils.exam_report import (
-    ExamReport,
-)
+from utils.appDocuments import getExamReportObjectByType
+from utils.exam_report import ExamReport
 
 
 class UnitTestExamReport(TestCase):
     def setUp(self):
         setup = super().setUp()
         self.exam_rep = ExamReport()
-        # self.pdf_folder = Path(__file__).parent / 'reports_to_test'
+        self.pdf_folder = Path(__file__).parent / 'reports_to_test'
         return setup
     
+    def loadExamReportPDF(self, pdf_name):
+        """
+        loadExamReportPDF(pdf_name)
+        Returns a PDF file object in memory based on the name of a PDF in utils/tests/reports_to_test.
+        If file doesn't exist returns False
+        """
+        # Exam report path to test
+        pdf_path = self.pdf_folder / pdf_name
+
+        # Trying to load to memory a PDF file to test
+        try:
+            with open(pdf_path, 'rb') as f:
+                pdf_file = io.BytesIO(f.read())
+                return pdf_file
+        except Exception:
+            return False
+
     def test_if_file_is_a_valid_pdf_exam_report(self):
         # Exam Report Object
         er = self.exam_rep
 
-        # Exam report path to test
+        # Loading to memory a valid PDF file to test
         pdf_name = 'ld_mass_rp_01.pdf'
-
-        # Loading to memory a PDF file to test
-        pdf_file = loadExamReportPDF(pdf_name)
-
-        # Testing if the file is a PDF
-        data = er.loadRawData(pdf_file)
-        valid_file = data is not False
+        pdf_file = self.loadExamReportPDF(pdf_name)
 
         # Testing a valid exam report
         self.assertTrue(
-            valid_file,
+            er.loadRawData(pdf_file),
             msg="File doesn't exist or is not a PDF file"
         )
 
-        # File wich is not a exam report
+        # Loading to memory an invalid PDF file to test
         pdf_name = 'ld_invalid.pdf'
-        pdf_file = loadExamReportPDF(pdf_name)
-        data = er.loadRawData(pdf_file)
+        pdf_file = self.loadExamReportPDF(pdf_name)
 
         # Testing an invalid exam report
         self.assertFalse(
-            data
+            er.loadRawData(pdf_file)
         )
 
     @parameterized.expand([
@@ -55,7 +65,7 @@ class UnitTestExamReport(TestCase):
     ])
     def test_if_returns_type_of_report_exam_correctly(self, filename, type_exam):
         # Loading to memory a PDF file to test
-        pdf_file = loadExamReportPDF(filename)
+        pdf_file = self.loadExamReportPDF(filename)
 
         self.exam_rep.loadRawData(pdf_file)
         exam_type = self.exam_rep.getExamType()
@@ -74,7 +84,8 @@ class UnitTestExamReport(TestCase):
         # ('ld_invalid.pdf', 'v'),
     ])
     def test_if_returns_number_of_errors(self, filename, type):
-        er = getExamReportObjectByType(filename)
+        pdf_obj = self.loadExamReportPDF(filename)
+        er = getExamReportObjectByType(pdf_obj)
         self.assertIsNotNone(er.perc_defective)
 
     @parameterized.expand([
@@ -87,7 +98,8 @@ class UnitTestExamReport(TestCase):
         # ('ld_invalid.pdf', 'v'),
     ])
     def test_percentage_of_errors(self, filename, type):
-        er = getExamReportObjectByType(filename)
+        pdf_obj = self.loadExamReportPDF(filename)
+        er = getExamReportObjectByType(pdf_obj)
         self.assertIsNotNone(er.perc_defective)
 
     @parameterized.expand([
@@ -100,5 +112,6 @@ class UnitTestExamReport(TestCase):
         # ('ld_invalid.pdf'),
     ])
     def test_if_exam_report_is_subject_to_dispatch(self, filename):
-        er = getExamReportObjectByType(filename)
+        pdf_obj = self.loadExamReportPDF(filename)
+        er = getExamReportObjectByType(pdf_obj)
         self.assertTrue(er.isSubjectToDispatch())
