@@ -14,6 +14,11 @@
                 <div class="form-field-collumn">
                     {{ field.label_tag }}
                     {{ field }}
+                    {% if field.help_text %}
+                        <div class="help-text">
+                            {{ field.help_text }}
+                        </div>
+                    {% endif %}
                     {% if field.errors %}
                         <div class="error-message-form">
                             {{ field.errors }}

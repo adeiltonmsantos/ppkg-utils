@@ -134,6 +134,14 @@ select{
     margin: 2rem 0 0;
 }
 
+.help-text{
+    color: #19149b;
+    font-size: 1.4rem;
+    padding: 0.5rem;
+    width: 100%;
+    background-color: white;
+}
+
 .error-message-form{
     color: #ff0000;
 }
