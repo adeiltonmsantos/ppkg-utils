@@ -50,6 +50,7 @@ class HighErrorDispatchForm(forms.Form):
         ),
         required=True,
         label='Faça upload de um ou mais PDFs',
+        help_text='Só faça uploads de laudos de empresa com o mesmo CNPJ',
     )
 
     def clean(self):
