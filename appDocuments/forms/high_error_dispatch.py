@@ -3,30 +3,14 @@ from collections import defaultdict
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 
 
-# Overwriting ClearableFileInput
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-# Creating field to accept multile files upload
-class MultipleFileField(forms.FileField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault("widget", MultipleFileInput())
-        super().__init__(*args, **kwargs)
-
-    def clean(self, data, initial=None):
-        single_file_clean = super().clean
-        if isinstance(data, (list, tuple)):
-            result = [single_file_clean(d, initial) for d in data]
-        else:
-            result = [single_file_clean(data, initial)]
-        return result
-    
 class HighErrorDispatchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.errors_fields = defaultdict(list)
+        self.fields['dispatch_pdf'].widget.attrs.update({'multiple': True})
 
     dispatch_date = forms.DateField(
         required=True,
@@ -40,17 +24,11 @@ class HighErrorDispatchForm(forms.Form):
         )
     )
 
-    dispatch_pdf = MultipleFileField(
-        widget=MultipleFileInput(
-            attrs={
-                'multiple': True,
-                'class': 'form-file-input',
-                'accept': 'application/pdf',
-            }
-        ),
-        required=True,
+    dispatch_pdf = forms.FileField(
         label='Faça upload de um ou mais PDFs',
+        validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
         help_text='Só faça uploads de laudos de empresa com o mesmo CNPJ',
+        required=True,
     )
 
     def clean(self):
