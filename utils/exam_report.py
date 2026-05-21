@@ -70,7 +70,7 @@ class ExamReport():
                 for row in tb:
                     self.list_raw_data.append(row)
 
-            str_wanted = 'SERVIÇO PÚBLICO FEDERAL\nMINISTÉRIO DO DESENVOLVIMENTO, INDÚSTRIA, COMÉRCIO E SERVIÇOS\nINSTITUTO NACIONAL DE METROLOGIA, QUALIDADE E TECNOLOGIA'  # noqa: E501
+            str_wanted = 'LAUDO DE EXAME QUANTITATIVO DE PRODUTOS PRÉ-MEDIDOS'
             if str_wanted in self.list_raw_data[0][0]:
                 return True
             else:
