@@ -84,7 +84,7 @@ input, select{
 }
 
 .fields-container{
-    max-width: 75rem;
+    max-width: 70rem;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(37rem, 100%), 1fr));
     gap: 3rem 1rem;
@@ -139,7 +139,6 @@ select{
     font-size: 1.4rem;
     padding: 0.5rem;
     width: 100%;
-    background-color: white;
 }
 
 .error-message-form{
