@@ -1,6 +1,7 @@
 import datetime as dt
 import json
 import os
+import random
 
 from django.conf import settings
 from PIL import Image
@@ -86,8 +87,8 @@ class Dispatch(PDF):
 
     # Tentando carregar url da imagem do brasão do Estado
     self.url_coat_of_arms = None
-    if os.path.exists(settings.MEDIA_ROOT + '/brasao.png'):
-      self.url_coat_of_arms = f'{settings.MEDIA_ROOT} /brasao.png'
+    if os.path.exists(settings.MEDIA_ROOT / 'brasao.png'):
+      self.url_coat_of_arms = f'{settings.MEDIA_ROOT}/brasao.png'
 
     # Carregando arquivo json com dados do cabeçalho do despacho...
     # Existe arquivo
@@ -219,7 +220,7 @@ class Dispatch(PDF):
 
     self.set_xy(self.l_margin, self.cabec_h + 10)
 
-  def geraDespachoPDF(self):
+  def geraDespachoPDF(self, pathfile=None):
     """
     geraDespachoPDF(): Gera o PDF do despacho.
     Se houver erros passíveis de apreensão, gera o PDF com o texto final do
@@ -273,4 +274,9 @@ class Dispatch(PDF):
       self.cell(0, 6, '____________________________________________________', align='C', new_y='NEXT', new_x='LEFT')
       self.multi_cell(0, 6, 'Nome Responsável\nCargo Responsável', align='C')
 
-    self.output('DESPACHO.pdf')
+
+    code_file = random.randint(1, 100000)
+    filename = f'{code_file}_dispatch.pdf'
+    fullpath = filename if pathfile is None else f'{pathfile}/{filename}'
+    self.output(fullpath)
+    return fullpath
