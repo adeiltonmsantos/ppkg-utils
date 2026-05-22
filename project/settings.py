@@ -32,6 +32,9 @@ AGREEMNET_IMAGE_PATH = BASE_DIR / 'media' / os.getenv('AGREEMENT_IMAGE')
 # Signature of person in charge image path
 IN_CHARGE_IMAGE_PATH = BASE_DIR / 'media' / os.getenv('IN_CHARGE_SIGNATURE')
 
+# Folder for temporary dispatch pdf path
+DISPATCH_PATH = BASE_DIR / 'media' / os.getenv('DISPATCH_PDF_FOLDER')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
