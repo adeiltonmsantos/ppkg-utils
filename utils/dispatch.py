@@ -76,8 +76,8 @@ class Dispatch(PDF):
       dt.date.today().strftime('%d/%m/%Y')
     )
 
-    # Percentual da imagem da assinatura. Se não for informado usa 90%
-    self.width_perc_signature = args.get('width_perc_assin', 90)
+    # Percentual da imagem da assinatura. Se não for informado usa 20%
+    self.width_perc_signature = args.get('width_perc_assin', 30)
 
     # Nome do responsável pelo despacho
     self.responsable_name = args.get('responsable_name', '')
@@ -106,7 +106,7 @@ class Dispatch(PDF):
 
     # Tentando carregar a imagem de marca d'água do despacho
     if os.path.exists(AGREEMENT_IMAGE_PATH):
-      self.watermark = AGREEMENT_IMAGE_PATH
+      self.watermark = str(AGREEMENT_IMAGE_PATH)
 
     else:
       self.watermark = None
@@ -204,7 +204,6 @@ class Dispatch(PDF):
       marca = Image.open(self.watermark)
       w, h = marca.size
       w_h = w / h
-      marca.close()
 
       # Definindo a largura da imagem com base em w_h
       marca_w = marca_h * w_h
@@ -215,8 +214,15 @@ class Dispatch(PDF):
       else:
         marca_pos_x = 0
 
+      # Aplicando opacidade à marca d'água
+      marca = marca.convert('RGBA')
+      r,g,b,a = marca.split()
+      a = a.point(lambda p: int(p * 0.1))
+      marca = Image.merge('RGBA', (r,g,b,a))
+
       # Renderizando a imagem de marca d'água
-      self.image(self.watermark, w=marca_h, h=marca_h, y=marca_pos_y, x=marca_pos_x)
+      self.image(marca, w=marca_w, h=marca_h, y=marca_pos_y, x=marca_pos_x)
+      marca.close()
 
     self.set_xy(self.l_margin, self.cabec_h + 10)
 
@@ -266,7 +272,11 @@ class Dispatch(PDF):
     # Nome e cargo do responsável pelo despacho não foram definidos, mas imagem
     # assinatura foi. Imprime a imagem da assinatura
     elif not nome_cargo_definidos and self.url_signature is not None:
-      self.renderImage(self.url_signature, prop_w=self.width_perc_signature, y_adic_new_page=self.cabec_h)
+      self.renderImage(
+        self.url_signature,
+        prop_w=self.width_perc_signature,
+        y_adic_new_page=self.cabec_h,
+      )
 
     # Não foram definidos nem nome/cargo do responsável nem imagem de assinatura
     # Imprimir 'Nome Responsável' e 'Cargo Responsável'

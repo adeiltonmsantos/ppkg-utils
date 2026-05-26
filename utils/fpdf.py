@@ -1,3 +1,5 @@
+import io
+
 from fpdf import FPDF
 from PIL import Image
 
@@ -10,67 +12,71 @@ class PDF(FPDF):
     self.set_margins(20, 20, 20)
     self.set_xy(20,20)
 
-  # Retorna o limite vertical para quebra de página
+  # Returns the vertical limit for page breaks.
   def get_max_y(self):
     return self.h - 2 * self.t_margin
 
-  # Retorna o limite horizontal para ultrapassar margem direita
+  # Returns the horizontal limit to exceed the right margin.
   def get_max_x(self):
     return self.w - 2 * self.l_margin
 
   # Renderiza uma imagem no PDF e coloca o cursor abaixo dela
-  def renderImage(self, filename, prop_w=None, align=None, y_adic_new_page=None):
-    """ image(filename, dim, dim_vl): Define uma imagem no PDF e coloca o cursor abaixo dela.
-        O tamanho da imagem deve ser definido em relação à largura da página. O parâmetro
-        'prop_w' é um valor entre 0 e 100 que corresponde ao percentual da largura da página
-        que a imagem deve ocupar. Sua altura é automaticamente definida com base na proporção
-        entre altura e largura da própria imagem
+  def renderImage(self, filename, prop_w=None, align=None, y_adic_new_page=None, opacity=None):
+    """ 
+    renderImage(filename, dim, dim_vl): Defines an image in the PDF and places the cursor below it.
+
+    The image size must be defined in relation to the page width. The parameter
+    'prop_w' is a value between 0 and 100 that corresponds to the percentage of the page width
+    that the image should occupy. Its height is automatically defined based on the ratio
+    between the height and width of the image itself.
 
     Args:
-      - filename (obrigatório): Nome do arquivo da imagem
-      - prop_w (opcional): valor entre 0 e 100 que corresponde ao percentual da largura da
-                         página que a imagem deve ocupar. Sua altura é automaticamente
-                         definida com base na proporção entre altura e largura da própria
-                         imagem. Se não for informado, usa 100% da largura da página
-      - align (opcional): alinhamento da imagem que pode ser 'C', 'L' ou 'R'. Se não for
-                          informado alinha ao centro
-      - y_adic_new_page (opcional): incremento para a posição vertical, caso a imagem
-                                    ultrapasse a margem inferior da página e seja
-                                    renderizada na próxima página
+
+    - filename (required): Image file name
+
+    - prop_w (optional): Value between 0 and 100 that corresponds to the percentage of the page width
+    that the image should occupy. Its height is automatically
+    defined based on the ratio between the height and width of the image itself. If not informed, it uses 100% of the page width.
+
+    - align (optional): Image alignment, which can be 'C', 'L', or 'R'. If not specified, align to the center
+    - y_adic_new_page (optional): increment for vertical position, in case the image
+    exceeds the bottom margin of the page and is
+    rendered on the next page                                    
     """
 
     y = self.get_y()
 
-    # Para obter as dimensõres reais da imagem em pixels
-    img = Image.open(filename)
+    # To obtain the actual image dimensions in pixels.
+    try:
+      img = Image.open(filename)
+    except Exception:
+      img = filename
+      img.seek(0)
+      img = Image(open(io.BytesIO(img.read())))
 
-    # Capturando as dimensões da imagem
+    # Capturing the dimensions of the image
     W_img, H_img = img.size
 
-    # Razão entre largura e altura
+    # Ratio between width and height
     W_H = W_img/H_img
 
-    # Largura da página descontando as margens
+    # Page width excluding margins
     W_pg = self.w - self.l_margin - self.r_margin
 
-    # Altura da página descontando as margens
-    # H_pg = self.get_max_y() - self.t_margin
-
-    # Dimensões da imagem em milímetros
+    # Image dimensions in millimeters
     if prop_w is None:
       prop_w = 100
     W_img = W_pg * prop_w / 100
     H_img = W_img / W_H
 
-    # Se a base da imagem ultrapassar a margem inferior, quebra a página
-    # Posição y da base da imagem na página
-    Y = y + H_img
-    # Coordenada y que é o limite para ultrapassar a margem inferior
+    # If the image base extends beyond the bottom margin, the page breaks
+    Y = y + H_img # y-position of the image base on the page
+
+    # The y-coordinate is the limit for exceeding the lower margin.
     Y_lim = self.h - self.b_margin
     if Y > Y_lim:
       self.add_page()
       y = self.t_margin if y_adic_new_page is None else y_adic_new_page + self.t_margin
-
 
     # Posicionando o cursor de acordo com o parâmetro 'align'
     match align:
@@ -84,9 +90,16 @@ class PDF(FPDF):
         x_img = self.l_margin + (self.w - self.l_margin - self.r_margin - W_img) / 2
         self.set_x(x_img)
 
-    # Renderizando a imagem de acordo com a largura
-    self.image(filename, w=W_img, y=y, x=x_img)
+    # Definindo a opcacidade, se for informada
+    if opacity is not None and (opacity > 0 and opacity < 1):
+      img = img.convert('RGBA')
+      r, g, b, a = img.split()
+      a = a.point(lambda p: int(p * opacity))
+      img = Image.merge('RGBA', (r, g, b, a))
 
+    # Renderizando a imagem de acordo com a largura
+    self.image(img, w=W_img, y=y, x=x_img)
+    
     # Posicionando o cursor abaixo da imagem
     self.set_y(y + H_img)
 
