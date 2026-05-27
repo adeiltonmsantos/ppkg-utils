@@ -28,7 +28,12 @@
                 </div>
             {% endfor %}
         </div>
-
+        {% if dispatch_url %}
+            <div class="help_text">
+                <a href="{{ MEDIA_URL }}dispatch_pdfs/{{ dispatch_url }}" download>
+                    Clique aqui</a> para baixar o despacho
+            </div>
+        {% endif %}
         <div class="form-controls">
             <button type="submit" class="form-btn">Salvar</button>
             <button type="reset" class="form-btn">Cancelar</button>
