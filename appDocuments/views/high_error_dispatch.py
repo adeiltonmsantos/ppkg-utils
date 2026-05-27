@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib import messages
 from django.shortcuts import render
 from django.views import View
 
@@ -48,7 +49,9 @@ class HighErrorDispatch(View):
             url = None
             if len(errors) > 0:
                 dp = Dispatch(errors, dispatch_date=dispatch_date)
-                url = dp.geraDespachoPDF(pathfile=DISPATCH_FOLDER)
+                url = dp.makeDispatchPDF(pathfile=DISPATCH_FOLDER, perc_w_signature=80)
+            else:
+                messages.info(self.request, 'Não há erros para geração de despacho no(s) arquivo(s) enviado(s)')
 
             return self.render_template(form=form, dispatch_url=url)
         else:
