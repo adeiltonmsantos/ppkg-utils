@@ -67,6 +67,7 @@ input, select{
     min-height: calc(100vh - var(--header-footer-height));
     max-width: 90rem;
     margin: auto auto;
+    padding: 5rem;
 }
 
 /* Common forms and inputs */
