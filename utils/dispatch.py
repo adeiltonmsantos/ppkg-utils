@@ -1,7 +1,6 @@
 import datetime as dt
 import json
 import os
-import random
 
 from django.conf import settings
 from PIL import Image
@@ -45,39 +44,39 @@ uf_choices = {
 
 class Dispatch(PDF):
   """
-  Classe para gerar o PDF do despacho.
-  Argumento obrigatório
-    - list_erros: lista com textos de erros a serem exibidos
-  Argumentos opcionais: dicionário 'args'
-    - args['data_despacho']: se não for informada, usa a data atual
-    - args['width_perc_assin']: largura percentual da imagem da assinatura em
-    relaçao à largura da página. Se não for informada usa 90%
-    - args['nome_responsavel']: nome do responsável pelo despacho. Se não for
-    informado usa ''
-    - args['cargo_responsavel']: cargo do responsável pelo despacho. Se não for
-    informado usa ''
-  """
+  Class to generate the dispatch PDF.
+
+  Required argument
+  - list_erros: list with error texts to be displayed
+  Optional arguments: 'args' dictionary
+  - args['data_despacho']: if not informed, uses the current date
+  - args['width_perc_assin']: percentage width of the signature image in relation to the page 
+  width. If not informed, uses 90%
+  - args['nome_responsavel']: name of the person responsible for the dispatch. If not informed,
+    uses ''
+  - args['cargo_responsavel']: position of the person responsible for the dispatch. If not 
+  informed, uses ''  """
   def __init__(self, list_erros, **args):
-    # Altura do cabeçalho
+    # Header height
     self.cabec_h = None
 
-    # Margens das páginas
+    # Page margins
     self.l_margin = 20
     self.r_margin = 20
     self.t_margin = 10
     self.b_margin = 10
-    self.t_margin_cabec = 10 # t_margin é definido 10 em __init__() da classe
-                             # pai. Este atributo é definido porque na primeira
-                             # vez que header() é chamado em super().__init__()
-                             # t_margin é 10, mesmo sendo definido diferente acima
+    self.t_margin_cabec = 10 # t_margin is set to 10 in the parent class's __init__(). This
+                             # attribute is set because the first time header()
+                             # is called in super().__init__(), t_margin is 10, even though
+                          # it is set differently above
     # Data do despacho
     self.dispatch_date = args.get(
       'dispatch_date',
       dt.date.today().strftime('%d/%m/%Y')
     )
 
-    # Percentual da imagem da assinatura. Se não for informado usa 20%
-    self.width_perc_signature = args.get('width_perc_assin', 30)
+    # Percentual da imagem da assinatura na página. Se não for informado usa 80%
+    self.perc_w_signature = args.get('width_perc_assin', 80)
 
     # Nome do responsável pelo despacho
     self.responsable_name = args.get('responsable_name', '')
@@ -185,7 +184,7 @@ class Dispatch(PDF):
     txt_cabec = f'GOVERNO DO ESTADO DE {self.txt_state}\n'
     txt_cabec += f'{self.txt_secretary}\n'
     txt_cabec += f'{self.txt_ipem}\n'
-    txt_cabec += 'Órgão Executor do INMETRO'
+    txt_cabec += 'ÓRGÃO EXECUTOR DO INMETRO'
     self.multi_cell(0, 5, txt_cabec, align='C')
 
     # Definindo a altura do cabeçalho
@@ -226,12 +225,15 @@ class Dispatch(PDF):
 
     self.set_xy(self.l_margin, self.cabec_h + 10)
 
-  def geraDespachoPDF(self, pathfile=None):
+  def makeDispatchPDF(self, pathfile=None, perc_w_signature=100):
     """
-    geraDespachoPDF(): Gera o PDF do despacho.
+    makeDispatchPDF(): Gera o PDF do despacho.
     Se houver erros passíveis de apreensão, gera o PDF com o texto final do
     despacho. Se não houver erros retorna False
     """
+    # Signature image width in percentual about page
+    self.perc_w_signature = perc_w_signature
+
     # Quantidade de erros em 'self.list_erros'
     n = len(self.list_erros)
 
@@ -274,7 +276,7 @@ class Dispatch(PDF):
     elif not nome_cargo_definidos and self.url_signature is not None:
       self.renderImage(
         self.url_signature,
-        prop_w=self.width_perc_signature,
+        prop_w=self.perc_w_signature,
         y_adic_new_page=self.cabec_h,
       )
 
@@ -285,8 +287,15 @@ class Dispatch(PDF):
       self.multi_cell(0, 6, 'Nome Responsável\nCargo Responsável', align='C')
 
 
-    code_file = random.randint(1, 100000)
-    filename = f'{code_file}_dispatch.pdf'
+    code_file = 1 # Código do usuário (PK)
+    filename = f'{code_file:05d}_dispatch.pdf'
+
+    # Trying to erase previous file
+    try:
+      os.remove(settings.BASE_DIR / f'media/dispatch_pdfs/{filename}')
+    except Exception:
+      pass
+
     fullpath = filename if pathfile is None else f'{pathfile}/{filename}'
     self.output(fullpath)
-    return fullpath
+    return filename
