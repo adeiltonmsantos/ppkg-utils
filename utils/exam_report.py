@@ -362,6 +362,7 @@ class ExamReport():
             return self.perc_defective > 30
         except Exception as e:
             print(repr(e))
+            return False
 
     def getErrosTxt(self):
         """
