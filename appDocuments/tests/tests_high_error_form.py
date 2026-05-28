@@ -62,7 +62,50 @@ class IntegrationTestHighErrorDispatch(TestCase):
         resolve = self.client.post(
             reverse('appDocuments:high-error-dispatch'),
             data=self.form_data,
-            # format='multpart',
             follow=True
         )
-        pass
+        
+        str_wanted = 'Clique aqui</a> para baixar o despacho'
+        self.assertIn(
+            str_wanted,
+            resolve.content.decode('utf-8'),
+            msg=f'Wanted string "{str_wanted}" not found'
+        )
+
+    def test_high_error_dispatch_displays_message_if_theres_no_error(self):
+        self.form_data['dispatch_pdf'] = [
+                    self.loadExamReportPDF('ld_unid_rp_02.pdf'),
+                    # self.loadExamReportPDF('ld_mass_rp_01.pdf'),
+        ]
+        
+        resolve = self.client.post(
+            reverse('appDocuments:high-error-dispatch'),
+            data=self.form_data,
+            follow=True
+        )
+        
+        str_wanted = 'Não há erros para geração de despacho no(s) arquivo(s) enviado(s)'
+        self.assertIn(
+            str_wanted,
+            resolve.content.decode('utf-8'),
+            msg=f'Wanted string "{str_wanted}" not found'
+        )
+
+    def test_high_error_dispatch_displays_warns_about_invalid_file(self):
+        self.form_data['dispatch_pdf'] = [
+                    self.loadExamReportPDF('ld_unid_rp_02.pdf'),
+                    self.loadExamReportPDF('ld_invalid_01.pdf'),
+        ]
+        
+        resolve = self.client.post(
+            reverse('appDocuments:high-error-dispatch'),
+            data=self.form_data,
+            follow=True
+        )
+        
+        str_wanted = 'Arquivo(s) inválido(s): '
+        self.assertIn(
+            str_wanted,
+            resolve.content.decode('utf-8'),
+            msg=f'Wanted string "{str_wanted}" not found'
+        )
