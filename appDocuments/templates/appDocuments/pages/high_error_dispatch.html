@@ -36,7 +36,7 @@
         {% endif %}
         <div class="form-controls">
             <button type="submit" class="form-btn">Salvar</button>
-            <button type="reset" class="form-btn">Cancelar</button>
+            <button type="button" id="btn_reset" class="form-btn" data-url="{% url 'home' %}">Cancelar</button>
         </div>
         {% if form.errors %}
             <p class="error-message-form center">
@@ -52,4 +52,6 @@
         {% endif %}
     </form>
 </div>
+
+<script src="{% static 'appDocuments/js/scripts.js' %}"></script>
 {% endblock content %}
