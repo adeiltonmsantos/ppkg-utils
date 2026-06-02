@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from django.conf import settings
 
-from utils.appDocuments import extractScheduleToDataFrame
+from utils.appDocuments import extractScheduleToDictList
 
 
 class FileHanderUnitTest(TestCase):
@@ -16,9 +16,9 @@ class FileHanderUnitTest(TestCase):
         fileobj = None
         with open(url_file, 'rb') as f:
             fileobj = f
-            data = extractScheduleToDataFrame(fileobj)
+            data = extractScheduleToDictList(fileobj)
         
-        cols_list = data.columns.to_list()
+        cols_list = list(data[0].keys())
         list_wantd = ['data', 'tc', 'produto', 'marca', 'qn', 'quant']
 
         self.assertEqual(cols_list, list_wantd)

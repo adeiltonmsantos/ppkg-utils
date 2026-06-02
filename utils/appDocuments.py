@@ -1,4 +1,3 @@
-import datetime as dt
 import os
 
 import pandas as pd
@@ -66,7 +65,7 @@ def getExamReportObjectByType(pdf_file_object):
     else:
         return False
 
-def extractScheduleToDataFrame(fileobj):
+def extractScheduleToDictList(fileobj):
     pdf = plb.open(fileobj)
     lst_data = list()
 
@@ -78,7 +77,7 @@ def extractScheduleToDataFrame(fileobj):
     except FileNotFoundError:
         return 'File not found'
     except Exception as e:
-        print(e)
+        return e
 
     df = pd.DataFrame(
         lst_data,
@@ -92,7 +91,4 @@ def extractScheduleToDataFrame(fileobj):
         ]
     )
 
-    df['data'] = df['data'].apply(
-        lambda x: dt.datetime.strptime(x, '%d/%m/%Y')
-    )
-    return df
+    return df.to_dict(orient='records')
