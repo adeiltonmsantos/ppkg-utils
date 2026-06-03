@@ -20,4 +20,9 @@ urlpatterns = [
         views.HighErrorDispatch.as_view(),
         name='high-error-dispatch'
     ),
+    path(
+        'extract-exam-schedule',
+        lambda x: x,
+        name='extract-exam-schedule'
+    ),
 ]
