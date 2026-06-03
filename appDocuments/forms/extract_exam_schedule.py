@@ -5,7 +5,7 @@ from django.core.validators import FileExtensionValidator
 from utils.appDocuments import extractScheduleToDictList
 
 
-class ExtractExamSchedule(forms.Form):
+class UploadExamSchedule(forms.Form):
     exam_schedule_pdf = forms.FileField(
         required=True,
         label='Cronograma de perícias',

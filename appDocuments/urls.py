@@ -11,7 +11,7 @@ urlpatterns = [
         name='ipem-data-send'
     ),
     path(
-        'ipem_data/receive',
+        'ipem_data/receive/',
         views.IpemData.as_view(),
         name='ipem-data-receive'
     ),
@@ -21,8 +21,8 @@ urlpatterns = [
         name='high-error-dispatch'
     ),
     path(
-        'extract-exam-schedule',
-        lambda x: x,
-        name='extract-exam-schedule'
+        'upload-exam-schedule',
+        views.UploadExamSchedule.as_view(),
+        name='upload-exam-schedule'
     ),
 ]

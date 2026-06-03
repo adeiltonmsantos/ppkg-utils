@@ -19,7 +19,7 @@ class appDocumentsUrlTest(SimpleTestCase):
         self.assertEqual(url, url_wanted)
     
     def test_extract_exam_schedule_url_is_correct(self):
-        url = reverse('appDocuments:extract-exam-schedule')
-        url_wanted = '/documents/extract-exam-schedule'
+        url = reverse('appDocuments:upload-exam-schedule')
+        url_wanted = '/documents/upload-exam-schedule'
         self.assertEqual(url, url_wanted)
 

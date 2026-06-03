@@ -103,7 +103,7 @@ class IntegrationTestHighErrorDispatch(TestCase):
             follow=True
         )
         
-        str_wanted = 'Arquivo(s) inválido(s): '
+        str_wanted = 'Arquivo(s) inválido(s) encontrado(s):'
         self.assertIn(
             str_wanted,
             resolve.content.decode('utf-8'),

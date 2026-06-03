@@ -31,10 +31,10 @@ class HighErrorDispatchTest(SimpleTestCase):
 
 class ExtractExamScheduleViewsTest(SimpleTestCase):
 
-    def test_extract_exam_schedule_based_function_view_is_correct(self):
-        resolve_obj = resolve(reverse('appDocuments:extract-exam-schedule'))
+    def test_upload_exam_schedule_based_function_view_is_correct(self):
+        resolve_obj = resolve(reverse('appDocuments:upload-exam-schedule'))
         bcv_wanted = resolve_obj.func.view_class
-        bcv = views.ExtractExamSchedule
+        bcv = views.UploadExamSchedule
         self.assertIs(bcv, bcv_wanted)
 
     def test_extract_exam_schedule_template_is_correct(self):
