@@ -29,6 +29,15 @@ class HighErrorDispatchTest(SimpleTestCase):
         self.assertTemplateUsed(response, 'appDocuments/pages/high_error_dispatch.html')
 
 
-class HighErrorDispatchIntegrationTest(SimpleTestCase):
-    def test_high_error_dispatch_form_send_valid_pdf(self):
-        ...
+class ExtractExamScheduleViewsTest(SimpleTestCase):
+
+    def test_extract_exam_schedule_based_function_view_is_correct(self):
+        resolve_obj = resolve(reverse('appDocuments:extract-exam-schedule'))
+        bcv_wanted = resolve_obj.func.view_class
+        bcv = views.ExtractExamSchedule
+        self.assertIs(bcv, bcv_wanted)
+
+    def test_extract_exam_schedule_template_is_correct(self):
+        response = self.client.get(reverse('appDocuments:ipem-data-send'))
+        self.assertTemplateUsed(response, 'appDocuments/pages/ipem_data.html')
+

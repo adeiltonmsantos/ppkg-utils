@@ -17,3 +17,9 @@ class appDocumentsUrlTest(SimpleTestCase):
         url = reverse('appDocuments:high-error-dispatch')
         url_wanted = '/documents/high-error-dispatch'
         self.assertEqual(url, url_wanted)
+    
+    def test_extract_exam_schedule_url_is_correct(self):
+        url = reverse('appDocuments:extract-exam-schedule')
+        url_wanted = '/documents/extract-exam-schedule'
+        self.assertEqual(url, url_wanted)
+
