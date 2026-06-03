@@ -74,10 +74,8 @@ def extractScheduleToDictList(fileobj):
             for table in page.extract_tables():
                 data = [[x[0], x[5], x[3], x[6], x[7], x[8]] for x in table]
                 lst_data.extend(data[1:])
-    except FileNotFoundError:
-        return 'File not found'
-    except Exception as e:
-        return e
+    except Exception:
+        return False
 
     df = pd.DataFrame(
         lst_data,
