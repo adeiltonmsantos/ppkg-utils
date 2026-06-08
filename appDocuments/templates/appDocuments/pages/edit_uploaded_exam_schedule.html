@@ -1,0 +1,52 @@
+{% extends "global/pages/base.html" %}
+{% block title %} {{ title }} {% endblock title %}
+{% block content %}
+{% csrf_token %}
+{% include "global/partials/messages.html" %}
+{% load static %}
+<div class="form-container">
+    <h2>{{ title_form }}</h2>
+    <form action="{% url "appDocuments:" %}" method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+        <div class="fields-container">
+            {% for field in form %}
+                <div class="form-field-collumn">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="help-text">
+                            <i class="fa-regular fa-lightbulb"></i>&nbsp;
+                            {{ field.help_text }}
+                        </div>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="error-message-form">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-controls">
+            <button type="submit" class="form-btn">Enviar</button>
+            <button type="button" id="btn_reset" class="form-btn" data-url="{% url 'home' %}">Cancelar</button>
+        </div>
+        {% if form.errors %}
+            <p class="error-message-form center">
+                Corrija o(s) erro(s) acima listado(s) e tente novamente
+            </p>
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <p>
+                        {{ error }}                        
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </form>
+</div>
+
+<script src="{% static 'appDocuments/js/scripts.js' %}"></script>
+{% endblock content %}

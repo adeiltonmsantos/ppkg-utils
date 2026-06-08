@@ -25,4 +25,9 @@ urlpatterns = [
         views.UploadExamSchedule.as_view(),
         name='upload-exam-schedule'
     ),
+    path(
+        'edit-exam-schedule',
+        views.EditExamSchedule.as_view(),
+        name='edit-exam-schedule'
+    ),
 ]
