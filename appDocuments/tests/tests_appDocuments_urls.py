@@ -18,8 +18,13 @@ class appDocumentsUrlTest(SimpleTestCase):
         url_wanted = '/documents/high-error-dispatch'
         self.assertEqual(url, url_wanted)
     
-    def test_extract_exam_schedule_url_is_correct(self):
+    def test_upload_exam_schedule_url_is_correct(self):
         url = reverse('appDocuments:upload-exam-schedule')
         url_wanted = '/documents/upload-exam-schedule'
+        self.assertEqual(url, url_wanted)
+    
+    def test_edit_exam_schedule_url_is_correct(self):
+        url = reverse('appDocuments:edit-exam-schedule')
+        url_wanted = '/documents/edit-exam-schedule'
         self.assertEqual(url, url_wanted)
 
