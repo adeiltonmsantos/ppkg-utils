@@ -31,6 +31,7 @@ class HighErrorDispatchForm(forms.Form):
         validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
         help_text='Só faça uploads de laudos de empresa com o mesmo CNPJ',
         required=True,
+        widget=forms.FileInput(attrs={'accept': 'application/pdf',})
     )
 
     def clean(self):
