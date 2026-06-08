@@ -6,4 +6,6 @@ document.addEventListener('DOMContentLoaded', () =>{
         window.location.href = e.currentTarget.dataset.url
     })
 
+    
+
 })

@@ -6,7 +6,7 @@
 {% load static %}
 <div class="form-container">
     <h2>{{ title_form }}</h2>
-    <form action="{% url "appDocuments:high-error-dispatch" %}" method="post" enctype="multipart/form-data">
+    <form action="{% url "appDocuments:upload-exam-schedule" %}" method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
         <div class="fields-container">
@@ -35,7 +35,7 @@
             </div>
         {% endif %}
         <div class="form-controls">
-            <button type="submit" class="form-btn">Salvar</button>
+            <button type="submit" class="form-btn">Enviar</button>
             <button type="button" id="btn_reset" class="form-btn" data-url="{% url 'home' %}">Cancelar</button>
         </div>
         {% if form.errors %}
