@@ -1,23 +1,32 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import FileExtensionValidator
 
 from utils.appDocuments import extractScheduleToDictList
 
 
-class UploadExamSchedule(forms.Form):
+class UploadExamScheduleForm(forms.Form):
     exam_schedule_pdf = forms.FileField(
         required=True,
         label='Cronograma de perícias',
-        validators=[FileExtensionValidator(allowed_extensions=['pdf'])]
+        widget=forms.FileInput(
+            attrs={'accept': 'application/pdf',}
+        )
     )
 
-    def clean(self):
+    def clean_exam_schedule_pdf(self):
         super().clean()
         file_schedule = self.files.get('exam_schedule_pdf')
+        result = extractScheduleToDictList(file_schedule)
 
         if file_schedule is not False:
-            return extractScheduleToDictList(file_schedule)
+            return result
         else:
             raise ValidationError('O arquivo enviado não é válido')
 
+class EditExamScheduleForm(forms.Form):
+    exam_schedule_data = forms.CharField(
+        widget=forms.HiddenInput()
+    )
+
+    def clean_exam_schedule_data(self):
+        ...
