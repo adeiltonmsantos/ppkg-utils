@@ -29,9 +29,10 @@ class UploadExamSchedule(FormView):
 class EditExamSchedule(FormView):
     template_name = 'appDocuments/pages/edit_uploaded_exam_schedule.html'
     form_class = EditExamScheduleForm
-    success_url = 'appDocuments/pages/edit_uploaded_exam_schedule.html'
+    success_url = reversed('appDocuments:edit-exam-schedule')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title_form'] = 'Validação de Cronograma de Perícias'
         return context
+
