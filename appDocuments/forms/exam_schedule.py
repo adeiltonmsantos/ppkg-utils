@@ -25,8 +25,9 @@ class UploadExamScheduleForm(forms.Form):
 
 class EditExamScheduleForm(forms.Form):
     exam_schedule_data = forms.CharField(
+        required=False,
         widget=forms.HiddenInput()
     )
 
-    def clean_exam_schedule_data(self):
-        ...
+    # def clean_exam_schedule_data(self):
+    #     ...

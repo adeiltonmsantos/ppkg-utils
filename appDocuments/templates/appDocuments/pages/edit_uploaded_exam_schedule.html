@@ -6,13 +6,12 @@
 {% load static %}
 <div class="form-container">
     <h2>{{ title_form }}</h2>
-    <form action="{% url "appDocuments:" %}" method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
         <div class="fields-container">
             {% for field in form %}
                 <div class="form-field-collumn">
-                    {{ field.label_tag }}
                     {{ field }}
                     {% if field.help_text %}
                         <div class="help-text">

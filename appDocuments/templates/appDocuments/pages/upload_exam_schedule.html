@@ -6,7 +6,7 @@
 {% load static %}
 <div class="form-container">
     <h2>{{ title_form }}</h2>
-    <form action="{% url "appDocuments:upload-exam-schedule" %}" method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
         <div class="fields-container">
