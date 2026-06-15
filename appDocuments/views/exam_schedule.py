@@ -23,7 +23,7 @@ class UploadExamSchedule(FormView):
         return render(
             self.request,
             'appDocuments/pages/edit_uploaded_exam_schedule.html',
-            {data: data}
+            {'data': data}
         )
 
 class EditExamSchedule(FormView):
