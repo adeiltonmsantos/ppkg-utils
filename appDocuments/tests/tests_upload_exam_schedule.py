@@ -3,8 +3,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
-from appDocuments.forms import UploadExamSchedule
-
 
 class IntegrationTestUploadExamSchedule(TestCase):
     def setUp(self):
@@ -22,9 +20,8 @@ class IntegrationTestUploadExamSchedule(TestCase):
             )
     
     def test_if_file_is_valid(self):
-        pdf_file = self.loadPdfFile('timeline01.pdf')
+        pdf_file = self.loadPdfFile('timeline_invalid.pdf')
         data = {'exam_schedule_pdf': pdf_file}
-        form = UploadExamSchedule(data=data)
         
         resolve = self.client.post(
             reverse('appDocuments:upload-exam-schedule'),
@@ -32,4 +29,7 @@ class IntegrationTestUploadExamSchedule(TestCase):
             follow=True
         )
 
-        ...
+        self.assertIn(
+            'O arquivo enviado não é válido',
+            resolve.content.decode('utf-8')
+        )

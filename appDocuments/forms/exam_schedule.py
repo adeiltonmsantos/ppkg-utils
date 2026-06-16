@@ -18,7 +18,7 @@ class UploadExamScheduleForm(forms.Form):
         file_schedule = self.files.get('exam_schedule_pdf')
         result = extractScheduleToDictList(file_schedule)
 
-        if file_schedule is not False:
+        if result is not False:
             return result
         else:
             raise ValidationError('O arquivo enviado não é válido')
