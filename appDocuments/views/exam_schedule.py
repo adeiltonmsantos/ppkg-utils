@@ -1,6 +1,7 @@
 import json
 
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views.generic import FormView
 
 from appDocuments.forms import EditExamScheduleForm, UploadExamScheduleForm
@@ -23,13 +24,17 @@ class UploadExamSchedule(FormView):
         return render(
             self.request,
             'appDocuments/pages/edit_uploaded_exam_schedule.html',
-            {'data': data}
+            context={
+                'data': data,
+                'title_form': 'Validação de Cronograma de Perícias'
+            }
         )
+
 
 class EditExamSchedule(FormView):
     template_name = 'appDocuments/pages/edit_uploaded_exam_schedule.html'
     form_class = EditExamScheduleForm
-    success_url = reversed('appDocuments:edit-exam-schedule')
+    success_url = reverse_lazy('appDocuments:edit-exam-schedule')
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
