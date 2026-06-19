@@ -6,7 +6,7 @@
 {% load static %}
 <div class="form-container">
     <h2>{{ title_form }}</h2>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" action="{% url "appDocuments:edit-exam-schedule" %}" enctype="multipart/form-data"> 
 
         {% csrf_token %}
         <div class="fields-container">
@@ -28,10 +28,6 @@
             {% endfor %}
         </div>
 
-        <div class="form-controls">
-            <button type="submit" class="form-btn">Enviar</button>
-            <button type="button" id="btn_reset" class="form-btn" data-url="{% url 'home' %}">Cancelar</button>
-        </div>
         {% if form.errors %}
             <p class="error-message-form center">
                 Corrija o(s) erro(s) acima listado(s) e tente novamente
@@ -44,6 +40,51 @@
                 {% endfor %}
             {% endif %}
         {% endif %}
+        {% if data %}
+            <script id="schedule-data" type="application/json">{{ data | safe }}</script>
+        {% endif %}
+        <div class="schedule-data-container">
+            <div class="schedule-data-group">
+                <div class="schedule-data-date">Data</div>
+                <div class="schedule-data-tc">TC</div>
+                <div class="schedule-data-out">Doação</div>
+                <div class="schedule-data-prod">Produto</div>
+                <div class="schedule-data-brand">Marca</div>
+                <div class="schedule-data-qn">Qn</div>
+                <div class="schedule-data-quant">Qt.</div>
+            </div>
+            <div class="schedule-data-group">
+                <div class="schedule-data-date">16/06/2026</div>
+                <div class="schedule-data-tc">2070000</div>
+                <div class="schedule-data-out">Parcial</div>
+                <div class="schedule-data-prod">Feijão carioca</div>
+                <div class="schedule-data-brand">Tio Urbano</div>
+                <div class="schedule-data-qn">1 kg</div>
+                <div class="schedule-data-quant">20</div>
+            </div>
+            <div class="schedule-data-group">
+                <div class="schedule-data-date">16/06/2026</div>
+                <div class="schedule-data-tc">2070000</div>
+                <div class="schedule-data-out">Parcial</div>
+                <div class="schedule-data-prod">Feijão carioca</div>
+                <div class="schedule-data-brand">Tio Urbano</div>
+                <div class="schedule-data-qn">1 kg</div>
+                <div class="schedule-data-quant">20</div>
+            </div>
+            <div class="schedule-data-group">
+                <div class="schedule-data-date">16/06/2026</div>
+                <div class="schedule-data-tc">2070000</div>
+                <div class="schedule-data-out">Parcial</div>
+                <div class="schedule-data-prod">PALITOS DE BAMBU PARA CHURRASCO</div>
+                <div class="schedule-data-brand">Riachuelo</div>
+                <div class="schedule-data-qn">3Un.</div>
+                <div class="schedule-data-quant">20</div>
+            </div>
+        </div>
+        <div class="form-controls">
+            <button type="submit" class="form-btn">Enviar</button>
+            <button type="button" id="btn_reset" class="form-btn" data-url="{% url 'home' %}">Cancelar</button>
+        </div>
     </form>
 </div>
 
