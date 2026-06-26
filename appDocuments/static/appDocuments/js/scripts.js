@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', () =>{
         window.location.href = e.currentTarget.dataset.url
     })
 
+    // Getting container with schedule data
+    const schedule_data = document.querySelector('#schedule-data')
     
+    const str_content = schedule_data.textContent
+    let json_content = JSON.parse(str_content)
 
 })
