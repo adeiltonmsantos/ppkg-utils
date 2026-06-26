@@ -29,9 +29,9 @@ class ExamReport():
         self.T = None  # Tolerância individual (erro tipo T1)
         self.T3 = None  # Erro tipo T3
         self.total_defective = None  # Total de unidades com erro tipo T1
-        self.total_T3 = None  # Total de unidades com erro tipo T3
+        self.total_T3 = 0  # Total de unidades com erro tipo T3
         self.min_individual_value = None  # Qn - T
-        self.T3_error_value = None  # Qn - 3.T
+        self.T3_error_value = 0  # Qn - 3.T
         self.min_average = None
         self.perc_defective = None
         self.list_raw_data = []
@@ -71,7 +71,8 @@ class ExamReport():
                     self.list_raw_data.append(row)
 
             str_wanted = 'LAUDO DE EXAME QUANTITATIVO DE PRODUTOS PRÉ-MEDIDOS'
-            if str_wanted in self.list_raw_data[0][0]:
+            str_found = self.list_raw_data[0][0]
+            if str_wanted.replace(' ', '') in str(str_found).replace(' ', ''):
                 return True
             else:
                 return False
@@ -346,7 +347,7 @@ class ExamReport():
         try:
             self.T3_error_value = float(self.min_individual_value - 2 * self.T)
         except Exception:
-            self.T3_error_value = None
+            self.T3_error_value = 0
 
         # total_T3
         try:
@@ -354,7 +355,7 @@ class ExamReport():
             df_def = df.query('Cont_liq < @self.T3_error_value')
             self.total_T3 = len(df_def)
         except Exception:
-            self.total_T3 = None
+            self.total_T3 = 0
 
     def isSubjectToDispatch(self):
         try:
@@ -382,7 +383,7 @@ class ExamReport():
         txt_erros_start = f'o produto {self.product_name.upper()}, marca {self.product_brand.upper()}, examinad'  # noqa:E501
         txt_erros_start += f'o em nosso laboratório em {self.exam_report_date} é passível de a'  # noqa:E501
         txt_erros_start += f'preensão pois referente ao conteúdo nominal {self.qn_product} '  # noqa:E501
-        txt_erros_start += f'{self.unit_exam} determinado no laudo n.º {self.exam_report_num} '  # noqa:E501
+        txt_erros_start += f'{self.unit_product} determinado no laudo n.º {self.exam_report_num} '  # noqa:E501
 
         # String com o texto completo, se houver erros
         txt_erros = ''
