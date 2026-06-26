@@ -29,9 +29,11 @@
             {% endfor %}
         </div>
         {% if dispatch_url %}
-            <div class="help_text">
+            <div class="dispatch_link_container">
                 <a href="{{ MEDIA_URL }}dispatch_pdfs/{{ dispatch_url }}" download>
-                    Clique aqui</a> para baixar o despacho
+                    Clique aqui&nbsp;
+                    <i class="fa-solid fa-download"></i>&nbsp;
+                </a> para baixar o despacho
             </div>
         {% endif %}
         <div class="form-controls">

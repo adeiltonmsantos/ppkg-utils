@@ -1,3 +1,17 @@
+/* High error dispatch */
+.dispatch_link_container{
+    background-color: #e6f2ff;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+
+.dispatch_link_container a{
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+}
+
+/* Schedule */
 .schedule-data-container{
     display: flex;
     flex-direction: column;
@@ -73,20 +87,20 @@
 
 .schedule-data-prod{
     grid-column-start: 10;
-    grid-column-end: 14;
+    grid-column-end: 15;
 }
 
 .schedule-data-brand{
-    grid-column-start: 14;
-    grid-column-end: 17;
+    grid-column-start: 15;
+    grid-column-end: 18;
 }
 
 .schedule-data-qn{
-    grid-column-start: 17;
-    grid-column-end: 19;
+    grid-column-start: 18;
+    grid-column-end: 20;
 }
 
 .schedule-data-quant{
-    grid-column-start: 19;
+    grid-column-start: 20;
     grid-column-end: 21;
 }
