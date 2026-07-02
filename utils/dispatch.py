@@ -131,11 +131,9 @@ class Dispatch(PDF):
     self.txt_start = f'De acordo com a {self.norma} '
 
     # Parte final do texto do despacho (após os textos com erros)
-    self.txt_end = 'Recomendamos que a infração seja avaliada pela COJUR com'
-    self.txt_end += ' base no Art. 9º, § 1º, incisos I a V da Lei 9933 de 20/1'
-    self.txt_end += '2/1999 e que os dados deste Processo Jurídico sejam envia'
-    self.txt_end += 'dos a órgãos de defesa do consumidor para demais medidas '
-    self.txt_end += 'cabíveis.\n\n\nAtenciosamente\n\nA seu dispor'
+    self.txt_end = 'Como não dispomos nem de recursos nem de local adequado para apreensão de produtos pré-medidos'
+    self.txt_end += ', recomendamos que a infração seja avaliada pela COJUR com base no Art. 9º, § 1º, incisos I'
+    self.txt_end += ' a V da Lei 9933 de 20/12/1999.\n\n\nAtenciosamente\n\nA seu dispor'
 
     # Título 'DESPACHO'
     self.set_xy(20,70)
