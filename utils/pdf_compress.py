@@ -75,13 +75,10 @@ class PdfCompressor():
 
     def compress_and_merge(self, files_list):
         """
-        compress_and_merge(files_list, limit_in_MB, filename_merged, folder_temp=None)
+        compress_and_merge(files_list)
         ---------------------------------------------------
         Method that waits a list with in-memory PDF files to compress and merge:
         - files_list: list with in-memory PDF files to compress and merge
-        - limit_in_MB: maximum merged file size
-        - filename_merged: name of the merged file. If the compressed and merged file exceed LIMIT_MB
-        in size, multiple files are created (filename_merged01.pdf, filename_merged02.pdf, etc.)
         """
 
         # Compressing files in files_list
@@ -105,4 +102,4 @@ class PdfCompressor():
             temp_buffer.seek(0)
             return temp_buffer.getvalue()
         except Exception as e:
-            raise(f'files_list must be a list, even if only one file: {e}')
+            raise(f'An error occurred: {e}')
