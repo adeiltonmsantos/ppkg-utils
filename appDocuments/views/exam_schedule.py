@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import FormView
@@ -8,7 +9,7 @@ from appDocuments.forms import EditExamScheduleForm, UploadExamScheduleForm
 from utils.appDocuments import extractScheduleToDictList
 
 
-class UploadExamSchedule(FormView):
+class UploadExamSchedule(LoginRequiredMixin, FormView):
     template_name = 'appDocuments/pages/upload_exam_schedule.html'
     form_class = UploadExamScheduleForm
 
@@ -31,7 +32,7 @@ class UploadExamSchedule(FormView):
         )
 
 
-class EditExamSchedule(FormView):
+class EditExamSchedule(LoginRequiredMixin, FormView):
     template_name = 'appDocuments/pages/edit_uploaded_exam_schedule.html'
     form_class = EditExamScheduleForm
     success_url = reverse_lazy('appDocuments:edit-exam-schedule')

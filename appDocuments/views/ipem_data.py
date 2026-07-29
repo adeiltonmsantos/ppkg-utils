@@ -5,6 +5,7 @@ import os
 # from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic.base import TemplateView
@@ -16,11 +17,11 @@ from utils.django_midia import saveImageAsPng
 JSON_PATH = settings.JSON_IPEM_DATA_PATH
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'global/pages/base.html'
 
 
-class IpemData(View):
+class IpemData(LoginRequiredMixin, View):
 
     def render_template(self, **kwargs):
         form = kwargs.get('form', None)
@@ -108,7 +109,7 @@ class IpemData(View):
                 # Saving new files, if sent
                 if img['file'] is not None:
                     # Trying removing previuos file saved, if exists
-                    if os.path.exists(f"{settings.MEDIA_ROOT}/{img['name']}.png"):  # noqa:E501
+                    if os.path.exists(f"{settings.MEDIA_ROOT}/{img['name']}.png"):
                         os.remove(f"{settings.MEDIA_ROOT}/{img['name']}.png")
 
                     # Saving file as PNG

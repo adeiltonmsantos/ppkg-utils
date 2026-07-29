@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
 
@@ -9,7 +10,7 @@ from utils.dispatch import Dispatch
 
 DISPATCH_FOLDER = settings.DISPATCH_PATH or None
 
-class HighErrorDispatch(View):
+class HighErrorDispatch(LoginRequiredMixin, View):
     def render_template(self, **kwargs):
         form = kwargs.get('form', None)
         form_data = kwargs.get('form_data', None),
