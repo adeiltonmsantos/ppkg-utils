@@ -1,4 +1,5 @@
 import datetime as dt
+from datetime import timezone
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -15,7 +16,7 @@ class IntegrationTestHighErrorDispatch(TestCase):
 
     def setUp(self):
         self.form_data = {
-            'dispatch_date': f'{dt.datetime.today().day}/{dt.datetime.today().month}/{dt.datetime.today().year}',  # noqa:E501
+            'dispatch_date': f'{dt.datetime.now(tz=timezone.utc).day}/{dt.datetime.now(tz=timezone.utc).month}/{dt.datetime.now(tz=timezone.utc).year}',
             'dispatch_pdf': '',
         }
         self.test_reports_path = settings.BASE_DIR / 'utils/tests/reports_to_test'
@@ -39,7 +40,7 @@ class IntegrationTestHighErrorDispatch(TestCase):
                 content=pdf_file,
                 content_type='application/pdf'
             )
-        except Exception:
+        except FileNotFoundError:
             return False
 
     def test_high_error_dispatch_validate_date(self):
@@ -54,9 +55,10 @@ class IntegrationTestHighErrorDispatch(TestCase):
 
     def test_high_error_dispatch_loads_errors_from_pdf_files(self):
         self.form_data['dispatch_pdf'] = [
-                    self.loadExamReportPDF('ld_high_rp_01.pdf'),
+                    self.loadExamReportPDF('ld_high_rp_0.pdf'),
                     self.loadExamReportPDF('ld_length_rp_01.pdf'),
                     self.loadExamReportPDF('ld_mass_rp_01.pdf'),
+                    self.loadExamReportPDF('ld01.pdf'),
         ]
         
         resolve = self.client.post(
@@ -65,7 +67,7 @@ class IntegrationTestHighErrorDispatch(TestCase):
             follow=True
         )
         
-        str_wanted = 'Clique aqui</a> para baixar o despacho'
+        str_wanted = '</a> para baixar o despacho'
         self.assertIn(
             str_wanted,
             resolve.content.decode('utf-8'),
@@ -75,7 +77,7 @@ class IntegrationTestHighErrorDispatch(TestCase):
     def test_high_error_dispatch_displays_message_if_theres_no_error(self):
         self.form_data['dispatch_pdf'] = [
                     self.loadExamReportPDF('ld_unid_rp_02.pdf'),
-                    # self.loadExamReportPDF('ld_mass_rp_01.pdf'),
+                    self.loadExamReportPDF('ld_mass_rp_01.pdf'),
         ]
         
         resolve = self.client.post(

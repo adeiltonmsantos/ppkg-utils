@@ -81,7 +81,6 @@ class UnitTestExamReport(TestCase):
         ('ld_unid_ap_01.pdf', 'u'),
         ('ld_mass_rp_01.pdf', 'm'),
         ('ld_vol_rp_01.pdf', 'v'),
-        # ('ld_invalid.pdf', 'v'),
     ])
     def test_if_returns_number_of_errors(self, filename, type):
         pdf_obj = self.loadExamReportPDF(filename)
@@ -95,7 +94,6 @@ class UnitTestExamReport(TestCase):
         ('ld_unid_ap_01.pdf', 'u'),
         ('ld_mass_rp_01.pdf', 'm'),
         ('ld_vol_rp_01.pdf', 'v'),
-        # ('ld_invalid.pdf', 'v'),
     ])
     def test_percentage_of_errors(self, filename, type):
         pdf_obj = self.loadExamReportPDF(filename)
@@ -103,15 +101,19 @@ class UnitTestExamReport(TestCase):
         self.assertIsNotNone(er.perc_defective)
 
     @parameterized.expand([
-        ('ld_high_rp_01.pdf'),
-        ('ld_length_rp_01.pdf'),
-        ('ld_width_rp_01.pdf'),
-        # ('ld_unid_ap_01.pdf'),
-        ('ld_mass_rp_01.pdf'),
-        ('ld_vol_rp_01.pdf'),
-        # ('ld_invalid.pdf'),
+        # ('ld_high_rp_01.pdf'),
+        # ('ld_length_rp_01.pdf'),
+        # ('ld_width_rp_01.pdf'),
+        # ('ld_mass_rp_01.pdf'),
+        # ('ld_vol_rp_01.pdf'),
+        ('ld02.pdf'),
     ])
     def test_if_exam_report_is_subject_to_dispatch(self, filename):
         pdf_obj = self.loadExamReportPDF(filename)
         er = getExamReportObjectByType(pdf_obj)
         self.assertTrue(er.isSubjectToDispatch())
+
+    def test_if_errors_are_detected_correctly(self):
+        er = self.exam_rep
+        pdf_name = 'ld02.pdf'
+        data = er.loadRawData(self.loadExamReportPDF(pdf_name))

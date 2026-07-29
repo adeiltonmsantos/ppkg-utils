@@ -29,46 +29,56 @@ class ExamReport():
         self.T = None  # Tolerância individual (erro tipo T1)
         self.T3 = None  # Erro tipo T3
         self.total_defective = None  # Total de unidades com erro tipo T1
-        self.total_T3 = 0  # Total de unidades com erro tipo T3
+        self.total_T3 = None  # Total de unidades com erro tipo T3
         self.min_individual_value = None  # Qn - T
-        self.T3_error_value = 0  # Qn - 3.T
+        self.T3_error_value = None  # Qn - 3.T
         self.min_average = None
         self.perc_defective = None
-        self.list_raw_data = []
+        self.list_raw_data = None
         # String para extrair informações do produto (nome, marca, Qn)
         self._string1 = None
         # String para extrair n, c e T
         self._string2 = None
         # String para extrair n.º defeituosas encontradas e média mínima
         self._string3 = None
-        # Lista com linhas das string de medições
-        self.mesurements_list = []
+        self.mesurements_list = None # Lista com linhas das string de medições
         # DataFrame Pandas com as medições de 'lista_medicoes'
         self.df_medicoes = None
 
+    def properties_are_null(self):
+        """
+        properties_are_null()
+        ---------------------
+
+        Returns True if whole properties of of an instantiated object are None
+        """
+        for prop, value in self.__dict__.items():
+            if value is not None:
+                return False
+        return True
+
     # Carrega para a propriedade list_raw_data o conteúdo bruto do PDF do laudo
     def loadRawData(self, url_or_object_file):
-        # Resetando dados de laudo anterior
-        self.__init__()
+        # Reseting data of previous exam report
+        if not self.properties_are_null():
+            self.__init__()
 
         try:
-            # Carregando todo o conteúdo do laudo
+            # Initializing self.list_raw_data
+            self.list_raw_data = []
+
+            # Loading wholw content of exam report
             pdf = p.open(url_or_object_file)
 
-            # Extraindo as páginas para um iterável
+            # Extracting pages to a iterable
             pgs = pdf.pages
 
-            # Lista para receber todas as linhas das tabelas do PDF
-            tbls = []
+            # Extracting tables form pages
+            tbls = [pg.extract_tables() for pg in pgs][0]
 
-            # Varrendo todas as páginas para extrair as tabelas
-            for pg in pgs:
-                tbls += pg.extract_tables()
+            # Insertin whole data extracted in tables to self.list_raw_data
+            self.list_raw_data = [tb for tb in tbls][0]
 
-            # Varrendo as tabelas para extrair suas linhas para list_raw_data
-            for tb in tbls:
-                for row in tb:
-                    self.list_raw_data.append(row)
 
             str_wanted = 'LAUDO DE EXAME QUANTITATIVO DE PRODUTOS PRÉ-MEDIDOS'
             str_found = self.list_raw_data[0][0]
@@ -125,9 +135,12 @@ class ExamReport():
     # n, c, T, etc.). Extrai uma substring de uma string maior. Deve-se fornecer  # noqa:E501
     # um trecho antes e depois da substring (str_start e str_end) para extraí-la  # noqa:E501
     def _getValueBetweenStrings(self, string, str_start, str_end):
-        i_0 = string.index(str_start) + len(str_start)
-        i_1 = string.index(str_end)
-        return string[i_0: i_1]
+        try:
+            i_0 = string.index(str_start) + len(str_start)
+            i_1 = string.index(str_end)
+            return string[i_0: i_1]
+        except Exception:
+            return False
 
     # Carrega para a propriedade 'string1' a string da qual serão extraídos
     # dados do produto (nome, marca, Qn)
@@ -241,6 +254,13 @@ class ExamReport():
                'VALOR MÍN. INDIVIDUAL: ',
                '\nRESULTADO'
             )
+            if str_un_ex is False:
+                str_un_ex = self._getValueBetweenStrings(
+                string.upper(),
+                'VALOR MÍN. ACEITÁVEL: ',
+                '\nRESULTADO'
+                )
+
             lst_un_ex = str_un_ex.split(' ')
             self.unit_exam = lst_un_ex[1].lower()
         except Exception:
