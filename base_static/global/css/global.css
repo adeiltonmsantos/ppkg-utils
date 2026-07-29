@@ -62,7 +62,7 @@ input, select{
 .main-container{
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: calc(100vh - var(--header-footer-height));
     max-width: 90rem;
