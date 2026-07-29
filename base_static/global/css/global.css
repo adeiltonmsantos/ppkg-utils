@@ -67,7 +67,15 @@ input, select{
     min-height: calc(100vh - var(--header-footer-height));
     max-width: 90rem;
     margin: auto auto;
-    padding: 5rem;
+    padding: 0 auto 5rem auto;
+}
+
+.user-data-container{
+    width: 100vw;
+    height: 10rem;
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem 0 0 3.5rem;
 }
 
 /* Common forms and inputs */
