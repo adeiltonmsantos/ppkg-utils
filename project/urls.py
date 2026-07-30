@@ -8,7 +8,8 @@ from appDocuments.views import HomeView
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
-    path('documents/', include('appDocuments.urls'))
+    path('documents/', include('appDocuments.urls')),
+    path('users/', include('appUsers.urls')),
 ]
 
 urlpatterns += static(
