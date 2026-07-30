@@ -156,3 +156,6 @@ MESSAGE_TAGS = {
     constants.SUCCESS: 'success-message',
     constants.WARNING: 'warning-message',
 }
+
+LOGIN_URL = 'appUser:login'
+LOGIN_REDIRECT_URL = 'home'
