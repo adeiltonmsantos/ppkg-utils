@@ -6,7 +6,7 @@ import tempfile
 from pypdf import PdfWriter
 
 
-class PdfCompressor():
+class PdfCompressor:
     """
     PdfCompressor
     -------------
@@ -72,6 +72,46 @@ class PdfCompressor():
                     os.unlink(in_file.name)
                 if os.path.exists(out_file.name):
                     os.unlink(out_file.name)        
+
+    def compress_several_pdfs(self, files_list):
+        """
+        compress_several_pdfs(files_list)
+        ---------------------------------
+        Method to compress several PDF files. Returns a list with in-memory files compressed
+        """
+
+        try:
+            compressed_list = []
+
+            for file in files_list:
+                compressed_list.append(self.compress_pdf(file))
+            return compressed_list
+        except Exception as e:
+            print(e)
+
+    def merge_several_pdfs(self, files_list, merged_name=None):
+        """
+        merge()
+        -------
+        Method used to merge PDF files into only one file with name 'merged_name' 
+        """
+
+        try:
+            # Object that merge files
+            merger = PdfWriter()
+
+            # Merging files...
+            for file in files_list:
+                merger.append(io.BytesIO(file))
+
+            # Creating in-memory file
+            temp_buffer = io.BytesIO()
+            merger.write(temp_buffer)
+            temp_buffer.seek(0)
+            return temp_buffer.getvalue()
+        except NotImplementedError as e:
+            print(f"Files must be in-memory: {e}")
+
 
     def compress_and_merge(self, files_list):
         """

@@ -27,22 +27,39 @@ class UnitTestCompressPDF(TestCase):
         pdf_obj = self.pdf_folder / f'{pdf_name}_comp.pdf'
         pdf_obj.write_bytes(compressed)
 
-    def test_several_pdf_to_compress_individually(self):
-        files_list = [(pdffile.read_bytes(), pdffile.stem) for pdffile in self.pdf_folder.glob('*.pdf')]
+    def test_if_several_pdfs_compressed_are_returned_as_a_list(self):
+        # List with PDF files in folder for tests
+        files_list = [pdffile.read_bytes() for pdffile in self.pdf_folder.glob('*.pdf')]
 
-        pdfcompressor = PdfCompressor()
+        pdfcomp = PdfCompressor()
 
-        for pdf in files_list:
-            pdf_bytes = pdfcompressor.compress_pdf(pdf[0])
-            path_obj = self.pdf_folder / f'{pdf[1]}-compress.pdf'
-            path_obj.write_bytes(pdf_bytes)
-        
-        compressed_list = [pdffile for pdffile in self.pdf_folder.glob('*compress.pdf')]
+        compressed_list = pdfcomp.compress_several_pdfs(files_list)
 
-        self.assertEqual(
-            len(files_list),
-            len(compressed_list)
+        # Total files sizes before compressing
+        total_before = sum([len(f) for f in files_list])
+
+        # Total files list after compressing
+        total_after = sum([len(f) for f in compressed_list])
+
+        self.assertTrue(
+            total_after <= total_before
         )
+
+    def test_merge_files(self):
+        # List with PDF files
+        files = [pdffile.read_bytes() for pdffile in self.pdf_folder.glob('*.pdf')]
+
+        # Merging files...
+        pdfcompressor = PdfCompressor()
+        mergedfiles = pdfcompressor.merge_several_pdfs(files_list=files)
+
+        # Total size of files before merging...
+        size_before = sum([len(f) for f in files])
+
+        # Total size after merging...
+        size_after = len(mergedfiles)
+
+        self.assertTrue(size_after <= size_before)
     
     def test_compress_and_merge_several_pdfs(self):
         # Defining list with bytes of PDF files in disc
