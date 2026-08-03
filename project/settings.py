@@ -157,5 +157,5 @@ MESSAGE_TAGS = {
     constants.WARNING: 'warning-message',
 }
 
-LOGIN_URL = 'appUser:login'
+LOGIN_URL = 'appUsers:login'
 LOGIN_REDIRECT_URL = 'home'
