@@ -27,4 +27,11 @@ class appDocumentsUrlTest(SimpleTestCase):
         url = reverse('appDocuments:edit-exam-schedule')
         url_wanted = '/documents/edit-exam-schedule'
         self.assertEqual(url, url_wanted)
+    
+    def test_compress_pdf_url_is_correct(self):
+        url = reverse('appDocuments:compress-pdf')
+        url_wanted = '/documents/compress-pdf'
+        self.assertEqual(url, url_wanted)
+
+    
 

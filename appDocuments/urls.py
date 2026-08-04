@@ -30,4 +30,9 @@ urlpatterns = [
         views.EditExamSchedule.as_view(),
         name='edit-exam-schedule'
     ),
+    path(
+        'compress-pdf',
+        lambda x: x,
+        name='compress-pdf'
+    ),
 ]
