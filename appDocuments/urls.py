@@ -32,7 +32,7 @@ urlpatterns = [
     ),
     path(
         'compress-pdf',
-        lambda x: x,
+        views.CompressPdfView.as_view(),
         name='compress-pdf'
     ),
 ]

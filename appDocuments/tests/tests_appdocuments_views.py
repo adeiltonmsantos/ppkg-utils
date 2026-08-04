@@ -51,3 +51,11 @@ class ExamScheduleViewsTest(SimpleTestCase):
         response = self.client.get(reverse('appDocuments:edit-exam-schedule'))
         self.assertTemplateUsed(response, 'appDocuments/pages/edit_uploaded_exam_schedule.html')
 
+
+class CompressPdfFilesTest(SimpleTestCase):
+    def test_compress_pdf_files_based_function_view_is_correct(self):
+        resolve_obj = resolve(reverse('appDocuments:compress-pdf'))
+        bcv_wanted = resolve_obj.func.view_class
+        bcv = views.CompressPdfView
+        self.assertIs(bcv, bcv_wanted)
+
