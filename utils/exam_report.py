@@ -1,10 +1,12 @@
+import copy
 import math
 
 import pandas as pd
 import pdfplumber as p
+from pdfplumber.utils.exceptions import PdfminerException
 
 
-class ExamReport():
+class ExamReport:
     """
     class ExamReport(): Instancia um laudo genérico. Deve ser instanciada apenas
     para extração de dados com o método 'loadRawData()' e determinar o tipo
@@ -41,75 +43,180 @@ class ExamReport():
         self._string2 = None
         # String para extrair n.º defeituosas encontradas e média mínima
         self._string3 = None
-        self.mesurements_list = None # Lista com linhas das string de medições
+        self.measurements_list = None # Lista com linhas das string de medições
         # DataFrame Pandas com as medições de 'lista_medicoes'
         self.df_medicoes = None
 
-    def properties_are_null(self):
-        """
-        properties_are_null()
-        ---------------------
 
-        Returns True if whole properties of of an instantiated object are None
-        """
-        for prop, value in self.__dict__.items():
-            if value is not None:
-                return False
-        return True
-
-    # Carrega para a propriedade list_raw_data o conteúdo bruto do PDF do laudo
     def loadRawData(self, url_or_object_file):
-        # Reseting data of previous exam report
-        if not self.properties_are_null():
-            self.__init__()
-
+        """
+        loadRawData(url_or_object_file)
+        -------------------------------
+        Loads relevant data from a PDF exam report (URL or in-memory file)
+        """
         try:
             # Initializing self.list_raw_data
             self.list_raw_data = []
 
-            # Loading wholw content of exam report
+            # Initializing measurement_list property
+            self.measurements_list = []
+
+            # Initializing total_T3
+            self.total_T3 = 0
+
+            # Loading whole content of exam report
             pdf = p.open(url_or_object_file)
 
             # Extracting pages to a iterable
             pgs = pdf.pages
 
             # Extracting tables form pages
-            tbls = [pg.extract_tables() for pg in pgs][0]
+            tbls = [pg.extract_tables() for pg in pgs][0]  # noqa: RUF015
 
             # Insertin whole data extracted in tables to self.list_raw_data
-            self.list_raw_data = [tb for tb in tbls][0]
+            self.list_raw_data = next(iter(tbls))
+
+            # Scanning the tables in iterable to get the relevant data
+            for tb in tbls:
+                # Setting list_raw_data property with raw data
+                self.list_raw_data.append(tb)
+                # Scanning a table from list_raw_data to get the relevant data
+                for row in self.list_raw_data:
+                    # Getting T, T3, c, n and exam type
+                    if row[0] is not None and str(row[0]).upper().startswith('TERMO DE COLETA'):
+                        data = [str(item).split('\n') for item in row if item is not None]
+                        for item in data[1]:
+                            if str(item).startswith('Amostra:'):
+                                self.n = int(str(item).split(' ')[1])
+                            elif str(item).startswith('Número de amostras defeituosas aceitáveis (c):'):
+                                lst = str(item).split(' ')
+                                self.c = int(lst[len(lst) - 1])
+                            elif str(item).startswith('Tolerância Individual:'):
+                                lst = str(item).split(' ')
+                                self.T = float(str(lst[len(lst) - 2]).replace(',', '.'))
+                                self.T3 = self.T * 3
+                                unit_exam = lst[len(lst) - 1]
+                                match unit_exam:
+                                    case 'g':
+                                        self.exam_report_type = 'm'
+                                        self.unit_exam = 'g'
+                                    case 'kg':
+                                        self.exam_report_type = 'm'
+                                        self.unit_exam = 'kg'
+                                    case 'L':
+                                        self.exam_report_type = 'v'
+                                        self.unit_exam = 'L'
+                                    case 'mL':
+                                        self.exam_report_type = 'v'
+                                        self.unit_exam = 'mL'
+                                    case 'm':
+                                        self.exam_report_type = 'c'
+                                        self.unit_exam = 'm'
+                                    case 'cm':
+                                        self.exam_report_type = 'c'
+                                        self.unit_exam = 'cm'
+                                    case 'mm':
+                                        self.exam_report_type = 'c'
+                                        self.unit_exam = 'mm'
+                                    case 'Un.':
+                                        self.exam_report_type = 'u'
+                                        self.unit_exam = 'Un.'
+                    # Getting product name and brand name, qn_product
+                    elif row[0] is not None and str(row[0]).upper().startswith('PRODUTO:'):
+                        data = str(row[0]).split('\n')
+                        # Product name
+                        self.product_name = self._getValueBetweenStrings(
+                            data[0],
+                            'Produto:',
+                            'Conteúdo'
+                        )
+                        # Product brand
+                        self.product_brand = str(data[1][7:]).strip()
+
+                        # Nominal product content (Qn)
+                        if self.exam_report_type == 'u':
+                            self.qn_product = str(data[2]).split(':')[1].strip()
+                            self.unit_product = 'Un.'
+                        else:
+                            self.qn_product = self._getValueBetweenStrings(
+                                data[2],
+                                'Conteúdo Nominal:',
+                                'Massa'
+                            )
+                            self.unit_product = str(self.qn_product).split()[1]
+
+                        self.product_name = self._getValueBetweenStrings(
+                            data[0],
+                            'Produto:',
+                            'Código'
+                        )
+                    # Getting total number of sample units with individual error (total_defective), Qn - T 
+                    # (min_individual_value)) and Qn - 3T (T3_error_value)
+                    elif str(row[0]).startswith('Tipo de Emb'):
+                        data = row
+                        if self.exam_report_type == 'u':
+                            str_values_list = str(data[3]).split('\n')
+                            min_ind_value_list1 = str(str_values_list[1]).split(': ')
+                            min_ind_value_list2 = str(min_ind_value_list1[1]).split(' ')
+                            self.min_individual_value = int(str(min_ind_value_list2[0]).strip())
+                        else:
+                            str_values_list = str(data[1]).split('\n')
+                            min_ind_value_list1 = str(str_values_list[1]).split(': ')
+                            min_ind_value_list2 = str(min_ind_value_list1[1]).split(' ')
+                            self.min_individual_value = float(str(min_ind_value_list2[0]).replace(',', '.').strip())
+                        self.T3_error_value = self.min_individual_value - 2 * self.T
+                        self.total_defective = int(str_values_list[0].split(':')[1].strip())
+                        self.perc_defective = round(self.total_defective * 100 / self.n, 1)
+                    # Getting exam measurements data
+                    elif row[0] is not None and str(row[0][0: 1]).isnumeric():
+                        match self.exam_report_type:
+                            case 'm':
+                                row_data = str(row[0]).split(' ')
+                                try:
+                                    value = float(str(row_data[2]).replace(',', '.'))
+                                    self.measurements_list.append(value)
+                                    if value < self.T3_error_value:
+                                        self.total_T3 += 1
+                                except IndexError:
+                                    break
+                            case 'v':
+                                row_data = str(row[0]).split(' ')
+                                try:
+                                    value = float(str(row_data[3]).replace(',', '.'))
+                                    self.measurements_list.append(value)
+                                    if value < self.T3_error_value:
+                                        self.total_T3 += 1
+                                except IndexError:
+                                    break
+                            case 'c':
+                                row_data = str(row[0]).split(' ')
+                                try:
+                                    value = float(str(row_data[1]).replace(',', '.'))
+                                    self.measurements_list.append(value)
+                                    if value < self.T3_error_value:
+                                        self.total_T3 += 1
+                                except IndexError:
+                                    break
+                            case 'u':
+                                if row[1] != '' and str(row[1]).isnumeric():
+                                    value = int(row[1])
+                                    if value < self.T3_error_value:
+                                        self.total_T3 += 1
+                                    self.measurements_list.append(value)
+                                else:
+                                    break
 
 
-            str_wanted = 'LAUDO DE EXAME QUANTITATIVO DE PRODUTOS PRÉ-MEDIDOS'
-            str_found = self.list_raw_data[0][0]
-            if str_wanted.replace(' ', '') in str(str_found).replace(' ', ''):
-                return True
-            else:
-                return False
-        except Exception:
+            str_wanted = ('LAUDO DE EXAME QUANTITATIVO DE PRODUTOS PRÉ-MEDIDOS').replace(' ', '')
+            str_found = (self.list_raw_data[0][0]).replace(' ', '')
+            return str_wanted in str(str_found)
+        except PdfminerException as e:
+            print(e)
             return False
 
     # Retorna o tipo de exame e o atribui à 'tipo_exame'
     def getExamType(self):
-        if self.exam_report_type is None:
-            raw_data = self.list_raw_data
-            try:
-                for item in raw_data:
-                    # Exam type is 'number of units'
-                    if 'Unidade amostral' in str(item[0]):
-                        return 'u'
-                    elif 'Unidade nº' in str(item[0]):
-                        # Removing all the blank spaces from string item
-                        item = str(item).replace(' ', '').lower()
-                        if 'ml' in item:
-                            return 'v'
-                        if '(g)' in item:
-                            return 'm'
-                        if '(cm)' in item:
-                            return 'c'
-            except Exception as e:
-                print(repr(e))
-                return False
+        return self.exam_report_type
 
     def getTC(self):
         string = self._getDataByString('Termo de Coleta')
@@ -131,14 +238,14 @@ class ExamReport():
                     return row
         return None
 
-    # Método protegido utilizado para obter os dados do laudo (produto, marca, qn,  # noqa:E501
-    # n, c, T, etc.). Extrai uma substring de uma string maior. Deve-se fornecer  # noqa:E501
-    # um trecho antes e depois da substring (str_start e str_end) para extraí-la  # noqa:E501
+    # Método protegido utilizado para obter os dados do laudo (produto, marca, qn,
+    # n, c, T, etc.). Extrai uma substring de uma string maior. Deve-se fornecer
+    # um trecho antes e depois da substring (str_start e str_end) para extraí-la
     def _getValueBetweenStrings(self, string, str_start, str_end):
         try:
             i_0 = string.index(str_start) + len(str_start)
             i_1 = string.index(str_end)
-            return string[i_0: i_1]
+            return string[i_0: i_1].strip()
         except Exception:
             return False
 
@@ -180,11 +287,32 @@ class ExamReport():
             if row[0] is not None and 'Produto: ' in row[0]:
                 linhas_com_medicoes = False
             if linhas_com_medicoes and len(row[0]) > 2:
-                self.mesurements_list.append(row[0])
+                self.measurements_list.append(row[0])
             if row[0] is not None and 'Unidade nº ' in row[0]:
                 linhas_com_medicoes = True
 
-        return self.mesurements_list
+        return self.measurements_list
+
+
+    def getMeasurementsList(self):
+        """
+        getMeasurementsList()
+        ---------------------
+        Fills 'measurements_list' property with raw exame measurements results in a list. The
+        "loadRawData()" method must be runned first. This method must be overwrited by child classes
+        """
+        try:
+            main_list = []
+            for item in self.list_raw_data:
+                result = True
+                if len(item[0]) == 1 and str(item[0][0: 1]).isnumeric():
+                    main_list.append(item)
+            self.measurements_list = main_list
+            return main_list
+        except TypeError as e:
+            print(f'You must run "loadRawData" firstly: {e}')
+            return False
+
 
     # Transforma o conteúdo de lista_medicoes em dataframe Pandas
     def getMedicoesDataFrame(self):
@@ -194,10 +322,10 @@ class ExamReport():
         """
 
         # Carregando 'lista_medicoes'
-        if self.mesurements_list == []:
+        if self.measurements_list == []:
             data = self._getListaMedicoes()
         else:
-            data = self.mesurements_list
+            data = self.measurements_list
 
         # Transformando 'lista_medicoes' em dataframe Pandas
         self.df_medicoes = pd.DataFrame(
@@ -378,12 +506,7 @@ class ExamReport():
             self.total_T3 = 0
 
     def isSubjectToDispatch(self):
-        try:
-            self.loadProdData()
-            return self.perc_defective > 30
-        except Exception as e:
-            print(repr(e))
-            return False
+        return self.perc_defective > 30 or self.total_T3 > 0
 
     def getErrosTxt(self):
         """
@@ -400,10 +523,10 @@ class ExamReport():
         total_T3 = self.total_T3
 
         # Início do texto a ser definido se houver erros
-        txt_erros_start = f'o produto {self.product_name.upper()}, marca {self.product_brand.upper()}, examinad'  # noqa:E501
-        txt_erros_start += f'o em nosso laboratório em {self.exam_report_date} é passível de a'  # noqa:E501
-        txt_erros_start += f'preensão pois referente ao conteúdo nominal {self.qn_product} '  # noqa:E501
-        txt_erros_start += f'{self.unit_product} determinado no laudo n.º {self.exam_report_num} '  # noqa:E501
+        txt_erros_start = f'o produto {self.product_name.upper()}, marca {self.product_brand.upper()}, examinad'
+        txt_erros_start += f'o em nosso laboratório em {self.exam_report_date} é passível de a'
+        txt_erros_start += f'preensão pois referente ao conteúdo nominal {self.qn_product} '
+        txt_erros_start += f'{self.unit_product} determinado no laudo n.º {self.exam_report_num} '
 
         # String com o texto completo, se houver erros
         txt_erros = ''
@@ -411,19 +534,19 @@ class ExamReport():
         # Montando o texto se houver os dois erros
         if perc_T1 > 30 and total_T3 > 0:
             txt_erros += txt_erros_start
-            txt_erros += "apresenta pelo menos uma unidade amostral com déficit de conteúdo "  # noqa:E501
-            txt_erros += "efetivo três vezes maior que o estabelecido pelo RTM em vigor e apr"  # noqa:E501
-            txt_erros += f"esenta {perc_T1}% de unidades amostrais com erro individual (o li"  # noqa:E501
+            txt_erros += "apresenta pelo menos uma unidade amostral com déficit de conteúdo "
+            txt_erros += "efetivo três vezes maior que o estabelecido pelo RTM em vigor e apr"
+            txt_erros += f"esenta {perc_T1}% de unidades amostrais com erro individual (o li"
             txt_erros += "mite para apreensão é 30%)"
         # Montando o texto só com o erro T3
         elif not perc_T1 > 30 and total_T3:
             txt_erros += txt_erros_start
-            txt_erros += "apresenta pelo menos uma unidade amostral com déficit de conteúdo "  # noqa:E501
-            txt_erros += "efetivo três vezes maior que o estabelecido pelo RTM em vigor."  # noqa:E501
+            txt_erros += "apresenta pelo menos uma unidade amostral com déficit de conteúdo "
+            txt_erros += "efetivo três vezes maior que o estabelecido pelo RTM em vigor."
         # Montando o texto só com o erro T1
         elif perc_T1 > 30 and not total_T3:
             txt_erros += txt_erros_start
-            txt_erros += f"apresenta {perc_T1}% de unidades amostrais com erro individual (o"  # noqa:E501
+            txt_erros += f"apresenta {perc_T1}% de unidades amostrais com erro individual (o"
             txt_erros += " limite para apreensão é 30%)"
 
         return txt_erros
@@ -451,7 +574,7 @@ class ExamReportMass(ExamReport):
         super()._getListaMedicoes()
 
         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.mesurements_list
+        rows = self.measurements_list
         lst_tmp = []
 
         # Varrendo rows
@@ -477,8 +600,8 @@ class ExamReportMass(ExamReport):
             else:
                 lst_tmp.append([lst[size-1], 0])
 
-            self.mesurements_list = lst_tmp
-            return self.mesurements_list
+            self.measurements_list = lst_tmp
+            return self.measurements_list
 
 
 class ExamReportVol(ExamReport):
@@ -527,7 +650,7 @@ class ExamReportVol(ExamReport):
         super()._getListaMedicoes()
 
         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.mesurements_list
+        rows = self.measurements_list
         lst_tmp = []
 
         # Varrendo rows
@@ -553,8 +676,8 @@ class ExamReportVol(ExamReport):
             else:
                 lst_tmp.append([lst[size-1], 0])
 
-        self.mesurements_list = lst_tmp
-        return self.mesurements_list
+        self.measurements_list = lst_tmp
+        return self.measurements_list
 
 
 class ExamReportLength(ExamReport):
@@ -615,7 +738,7 @@ class ExamReportLength(ExamReport):
         super()._getListaMedicoes()
 
         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.mesurements_list
+        rows = self.measurements_list
         lst_tmp = []
 
         # Varrendo rows
@@ -641,13 +764,25 @@ class ExamReportLength(ExamReport):
             else:
                 lst_tmp.append([lst[size-1], 0])
 
-        self.mesurements_list = lst_tmp
-        return self.mesurements_list
+        self.measurements_list = lst_tmp
+        return self.measurements_list
 
 
 class ExamReportUnit(ExamReport):
     def __init__(self):
         super().__init__()
+
+    @classmethod
+    def from_parent(cls, parent_instance):
+        # Creates a new instance of the child class without going through the standard __init__ process
+        child = cls()
+
+        
+        for key, value in parent_instance.__dict__.items():
+            setattr(child, key, copy.deepcopy(value))
+            
+        # 3. Entregamos o objeto filho pronto para uso.
+        return child
 
     # Sobrescreve o método 'loadProdData' p/ carregar 'marca_prod', 'qn_prod',
     # 'unid_prod', 'T' e 'valor_min_indiv' que não são carregados na classe pai
@@ -716,7 +851,7 @@ class ExamReportUnit(ExamReport):
                 linhas_com_medicoes = False
             if row[0] is not None and 'Produto: ' in row[0]:
                 linhas_com_medicoes = False
-            if linhas_com_medicoes:  # and row[1] is not None and len(row[1]) > 0:  # noqa:E501
+            if linhas_com_medicoes:  # and row[1] is not None and len(row[1]) > 0:
                 # Retirando todos os elementos nulos das linhas
                 while None in row:
                     row.remove(None)
@@ -728,11 +863,11 @@ class ExamReportUnit(ExamReport):
 
             # row tem 3 itens (índice, cont. efet. e cont. efet.)
             if len(row) == 3:
-                self.mesurements_list.append(row[2:] + [0])
+                self.measurements_list.append(row[2:] + [0])
             # row tem 4 itens  (índice, cont. efet., cont. efet., n.º defeit.)
             elif len(row) == 4:
-                self.mesurements_list.append(row[2:])
-            if row[0] is not None and 'UNIDADE AMOSTRAL' in str(row[0]).upper():  # noqa:E501
+                self.measurements_list.append(row[2:])
+            if row[0] is not None and 'UNIDADE AMOSTRAL' in str(row[0]).upper():
                 linhas_com_medicoes = True
 
-        return self.mesurements_list
+        return self.measurements_list
