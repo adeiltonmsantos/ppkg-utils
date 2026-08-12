@@ -1,10 +1,28 @@
-from django.test import SimpleTestCase
+from django.contrib.auth import get_user_model
+from django.test import TestCase
 from django.urls import resolve, reverse
 
 from appDocuments import views
 
+User = get_user_model()
 
-class IpemDataViewsTest(SimpleTestCase):
+class IpemDataViewsTest(TestCase):
+    def setUp(self):
+        setup = super().setUp()
+
+        self.username='username'
+        self.password='Strongpassorwd123'
+        
+        self.user = User.objects.create_user(
+            username=self.username,
+            password=self.password
+        )
+        self.client.login(
+            username=self.username,
+            password=self.password
+        )
+
+        return setup
 
     def test_ipem_data_based_function_view_is_correct(self):
         resolve_obj = resolve(reverse('appDocuments:ipem-data-send'))
@@ -17,7 +35,24 @@ class IpemDataViewsTest(SimpleTestCase):
         self.assertTemplateUsed(response, 'appDocuments/pages/ipem_data.html')
 
 
-class HighErrorDispatchTest(SimpleTestCase):
+class HighErrorDispatchTest(TestCase):
+    def setUp(self):
+        setup = super().setUp()
+
+        self.username='username'
+        self.password='Strongpassorwd123'
+        
+        self.user = User.objects.create_user(
+            username=self.username,
+            password=self.password
+        )
+        self.client.login(
+            username=self.username,
+            password=self.password
+        )
+
+        return setup
+
     def test_high_error_dispatch_based_function_view_is_correct(self):
         resolve_obj = resolve(reverse('appDocuments:high-error-dispatch'))
         bcv_wanted = resolve_obj.func.view_class
@@ -29,7 +64,23 @@ class HighErrorDispatchTest(SimpleTestCase):
         self.assertTemplateUsed(response, 'appDocuments/pages/high_error_dispatch.html')
 
 
-class ExamScheduleViewsTest(SimpleTestCase):
+class ExamScheduleViewsTest(TestCase):
+    def setUp(self):
+        setup = super().setUp()
+
+        self.username='username'
+        self.password='Strongpassorwd123'
+        
+        self.user = User.objects.create_user(
+            username=self.username,
+            password=self.password
+        )
+        self.client.login(
+            username=self.username,
+            password=self.password
+        )
+
+        return setup
 
     def test_upload_exam_schedule_based_function_view_is_correct(self):
         resolve_obj = resolve(reverse('appDocuments:upload-exam-schedule'))
@@ -52,7 +103,7 @@ class ExamScheduleViewsTest(SimpleTestCase):
         self.assertTemplateUsed(response, 'appDocuments/pages/edit_uploaded_exam_schedule.html')
 
 
-class CompressPdfFilesTest(SimpleTestCase):
+class CompressPdfFilesTest(TestCase):
     def test_compress_pdf_files_based_function_view_is_correct(self):
         resolve_obj = resolve(reverse('appDocuments:compress-pdf'))
         bcv_wanted = resolve_obj.func.view_class

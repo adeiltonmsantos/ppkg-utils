@@ -5,6 +5,7 @@ import tempfile
 from unittest.mock import patch
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -13,6 +14,7 @@ from PIL import Image
 
 from appDocuments.forms.ipem_data_register import IpemDataRegisterForm
 
+User = get_user_model()
 
 class UnitTestIpemDataForm(TestCase):
     @parameterized.expand([
@@ -31,7 +33,7 @@ class UnitTestIpemDataForm(TestCase):
 
     @parameterized.expand([
         ('uf_ipem', 'O campo "Estado do IPEM" é obrigatório'),
-        ('sec_ipem', 'A "Secretaria" ao qual o IPEM é vinculado é obrigatória'),  # noqa: E501
+        ('sec_ipem', 'A "Secretaria" ao qual o IPEM é vinculado é obrigatória'),
         ('rs_ipem', 'A "Razão Social" do IPEM é obrigatória'),
         ('name_ppkg_ipem', 'A "Nome" do setor de Pré-Embalados é obrigatório'),
     ])
@@ -54,6 +56,7 @@ class IntegrationTestIpemDataForm(TestCase):
         # Overwriting MEDIA_ROOT url
         cls.override = override_settings(MEDIA_ROOT=cls.temp_media)
         cls.override.enable()
+
         super().setUpClass()
 
     @classmethod
@@ -81,6 +84,18 @@ class IntegrationTestIpemDataForm(TestCase):
             'img_signt_checkbox': False,
         }
 
+        # Creating temporary user
+        self.username = 'username'
+        self.password = 'Strong.123password'
+        self.user = User.objects.create_user(
+            username=self.username,
+            password=self.password
+        )
+        self.client.login(
+            username=self.username,
+            password=self.password
+        )
+
         return super().setUp()
 
     def make_fake_image(self, img_name, size_mb=None):
@@ -93,7 +108,7 @@ class IntegrationTestIpemDataForm(TestCase):
         # 2. Se o parâmetro size_mb for passado, ajustamos o tamanho
         if size_mb:
             target_size_bytes = int(size_mb * 1024 * 1024)
-            current_size = img_io.tell()  # Posição atual do cursor (tamanho atual)  # noqa: E501
+            current_size = img_io.tell()  # Posição atual do cursor (tamanho atual)
 
             if target_size_bytes > current_size:
                 # Adiciona a diferença em bytes nulos (\x00)
@@ -151,7 +166,7 @@ class IntegrationTestIpemDataForm(TestCase):
         )
 
         # Testing if image exists
-        file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')  # noqa:E501
+        file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')
 
         self.assertTrue(
             file_exists,
@@ -192,14 +207,14 @@ class IntegrationTestIpemDataForm(TestCase):
         )
 
         # Testing if image doesn't exist
-        file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')  # noqa:E501
+        file_exists = os.path.exists(settings.MEDIA_ROOT + f'/{img_name}')
 
         self.assertFalse(file_exists)
 
     @parameterized.expand([
-        ('img_uf', 'O tamanho da imagem do brasão do estado não pode ser maior que 3MB'),  # noqa: E501
-        ('img_conv', 'O tamanho da imagem do convênio INMETRO/IPEM não pode ser maior que 3MB'),  # noqa: E501
-        ('img_signt', 'O tamanho da imagem do responsável não pode ser maior que 3MB'),  # noqa: E501
+        ('img_uf', 'O tamanho da imagem do brasão do estado não pode ser maior que 3MB'),
+        ('img_conv', 'O tamanho da imagem do convênio INMETRO/IPEM não pode ser maior que 3MB'),
+        ('img_signt', 'O tamanho da imagem do responsável não pode ser maior que 3MB'),
     ])
     def test_if_size_of_images_are_allowed(self, field_name, msg_wanted):
         # Creating fake image
@@ -224,9 +239,9 @@ class IntegrationTestIpemDataForm(TestCase):
         ('uf_ipem', 'Selecione um estado'),
         ('sec_ipem', 'O nome da secretaria deve ter no mínimo 10 caracteres'),
         ('rs_ipem', 'A razão social do IPEM deve ter no mínimo 10 caracteres'),
-        ('name_ppkg_ipem', 'O nome do setor de pré-embalados deve ter no mínimo 10 caracteres'),  # noqa: E501
-        ('img_uf', 'A imagem do brasão do estado não deve ser superior a 3 MB'),  # noqa: E501
-        ('img_conv', 'A imagem do convênio INMETRO/IPEM não deve ser superior a 3MB'),  # noqa: E501
+        ('name_ppkg_ipem', 'O nome do setor de pré-embalados deve ter no mínimo 10 caracteres'),
+        ('img_uf', 'A imagem do brasão do estado não deve ser superior a 3 MB'),
+        ('img_conv', 'A imagem do convênio INMETRO/IPEM não deve ser superior a 3MB'),
     ])
     def test_error_messages_fields_are_correct(self, field_name, message):
         if field_name in ('img_uf', 'img_conv'):

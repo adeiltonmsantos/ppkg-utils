@@ -1,13 +1,26 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
+User = get_user_model()
 
 class IntegrationTestUploadExamSchedule(TestCase):
     def setUp(self):
         setup = super().setUp()
         self.url_exam_schedules = settings.BASE_DIR / 'utils/tests/timelines_to_test'
+
+        self.user = User.objects.create_user(
+            username='username',
+            password='Strong@passorwd123'
+        )
+
+        self.client.login(
+            username=self.user.username,
+            password=self.user.password
+        )
+
         return setup
 
     def loadPdfFile(self, pdf_name):
