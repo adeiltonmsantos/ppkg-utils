@@ -5,8 +5,8 @@ from django.shortcuts import render
 from django.views import View
 
 from appDocuments.forms.high_error_dispatch import HighErrorDispatchForm
-from utils.appDocuments import getExamReportObjectByType
 from utils.dispatch import Dispatch
+from utils.exam_report import ExamReport
 
 DISPATCH_FOLDER = settings.DISPATCH_PATH or None
 
@@ -43,7 +43,8 @@ class HighErrorDispatch(LoginRequiredMixin, View):
 
             # Routine to generate dispatch here
             for f in dispatch_pdf:
-                er = getExamReportObjectByType(f)
+                er = ExamReport()
+                er.loadRawData(f)
                 if er.isSubjectToDispatch():
                     errors.append(er.getErrosTxt())
 

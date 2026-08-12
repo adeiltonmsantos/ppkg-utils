@@ -35,6 +35,11 @@ class UnitTestCompressPDF(TestCase):
 
         compressed_list = pdfcomp.compress_several_pdfs(files_list)
 
+        # pathpdf = self.pdf_folder
+        # for i, file in enumerate(compressed_list):
+        #     i += 1
+        #     (pathpdf / f'EMBALAGEM-{i}.pdf').write_bytes(file)
+
         # Total files sizes before compressing
         total_before = sum([len(f) for f in files_list])
 

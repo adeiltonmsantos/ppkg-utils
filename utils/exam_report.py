@@ -1,4 +1,3 @@
-import copy
 import math
 
 import pandas as pd
@@ -130,6 +129,13 @@ class ExamReport:
                             'Produto:',
                             'Conteúdo'
                         )
+                        if self.product_name is False:
+                            self.product_name = self._getValueBetweenStrings(
+                                data[0],
+                                'Produto:',
+                                'Código'
+                            )
+
                         # Product brand
                         self.product_brand = str(data[1][7:]).strip()
 
@@ -552,322 +558,322 @@ class ExamReport:
         return txt_erros
 
 
-class ExamReportMass(ExamReport):
-    def __init__(self):
-        super().__init__()
+# class ExamReportMass(ExamReport):
+#     def __init__(self):
+#         super().__init__()
 
-    # Sobrescreve 'loadProdData' apenas para calcular 'valor_erro_T3'
-    def loadProdData(self):
+#     # Sobrescreve 'loadProdData' apenas para calcular 'valor_erro_T3'
+#     def loadProdData(self):
 
-        # Chamando o método da classe pai. Em seguida é carregado o que
-        # o método da classe pai não é capaz de carregar
-        super().loadProdData()
+#         # Chamando o método da classe pai. Em seguida é carregado o que
+#         # o método da classe pai não é capaz de carregar
+#         super().loadProdData()
 
-        # Chamando método da classe pai para carregar os valores
-        # 'valor_erro_T3' e 'total_T3'
-        super()._getT3Values()
+#         # Chamando método da classe pai para carregar os valores
+#         # 'valor_erro_T3' e 'total_T3'
+#         super()._getT3Values()
 
-    # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
-    # das strings
-    def _getListaMedicoes(self):
-        # Carregando 'lista_medicoes' com o método da classe pai
-        super()._getListaMedicoes()
+#     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
+#     # das strings
+#     def _getListaMedicoes(self):
+#         # Carregando 'lista_medicoes' com o método da classe pai
+#         super()._getListaMedicoes()
 
-        # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.measurements_list
-        lst_tmp = []
+#         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
+#         rows = self.measurements_list
+#         lst_tmp = []
 
-        # Varrendo rows
-        for row in rows:
+#         # Varrendo rows
+#         for row in rows:
 
-            # Atribuindo row a lst sem o índice (unidade amostral)
-            lst = row.split(' ')[1:]
+#             # Atribuindo row a lst sem o índice (unidade amostral)
+#             lst = row.split(' ')[1:]
 
-            # Subsituindo as vírgulas das strings por ponto
-            lst = [x.replace(',', '.') for x in lst]
+#             # Subsituindo as vírgulas das strings por ponto
+#             lst = [x.replace(',', '.') for x in lst]
 
-            # Transformando todas as strings em float
-            lst = [float(x) for x in lst]
+#             # Transformando todas as strings em float
+#             lst = [float(x) for x in lst]
 
-            # Se o último item de lst for negativo (nº defeituosos), atribui
-            # a lst_tmp o último e penúltimo itens de lst
-            size = len(lst)
-            if lst[size-1] < 0:
-                lst_tmp.append([lst[size-2], lst[size-1]])
+#             # Se o último item de lst for negativo (nº defeituosos), atribui
+#             # a lst_tmp o último e penúltimo itens de lst
+#             size = len(lst)
+#             if lst[size-1] < 0:
+#                 lst_tmp.append([lst[size-2], lst[size-1]])
 
-            # O último item é positivo (peso líquido). Acrescenta o último
-            # item e o valor zero (nenhum defeituoso)
-            else:
-                lst_tmp.append([lst[size-1], 0])
+#             # O último item é positivo (peso líquido). Acrescenta o último
+#             # item e o valor zero (nenhum defeituoso)
+#             else:
+#                 lst_tmp.append([lst[size-1], 0])
 
-            self.measurements_list = lst_tmp
-            return self.measurements_list
-
-
-class ExamReportVol(ExamReport):
-    def __init__(self):
-        super().__init__()
-
-    # Sobrescreve o método 'loadProdData' p/ carregar 'T' e 'valor_min_indiv'
-    # que não são carregados na classe pai
-    def loadProdData(self):
-        # Chamando o método da classe pai. Em seguida é carregado o que o
-        # método da classe pai não é capaz de carregar
-        super().loadProdData()
-
-        # T
-        try:
-            self._getString2()
-            string = self._string2
-            str1 = 'TOLERÂNCIA INDIVIDUAL: '
-            str2 = ' M'
-            strT = self._getValueBetweenStrings(string.upper(), str1, str2)
-            strT = strT.replace(',', '.')
-            self.T = float(strT)
-        except Exception:
-            self.T = None
-
-        # valor_min_indiv (Qn - T)
-        try:
-            self._getString3()
-            string = self._string3
-            str1 = 'VALOR MÍN. INDIVIDUAL: '
-            str2 = ' ML'
-            strV = self._getValueBetweenStrings(string.upper(), str1, str2)
-            strV = strV.replace(',', '.')
-            self.min_individual_value = float(strV)
-        except Exception:
-            self.min_individual_value = None
-
-        # Chamando método da classe pai para carregar os valores
-        # 'valor_erro_T3' e 'total_T3'
-        super()._getT3Values()
-
-    # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
-    #  das strings
-    def _getListaMedicoes(self):
-        # Carregando 'lista_medicoes' com o método da classe pai
-        super()._getListaMedicoes()
-
-        # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.measurements_list
-        lst_tmp = []
-
-        # Varrendo rows
-        for row in rows:
-
-            # Atribuindo row a lst sem o índice (unidade amostral)
-            lst = row.split(' ')[1:]
-
-            # Subsituindo as vírgulas das strings por ponto
-            lst = [x.replace(',', '.') for x in lst]
-
-            # Transformando todas as strings em float
-            lst = [float(x) for x in lst]
-
-            # Se o último item de lst for negativo (nº defeituosos), atribui
-            #  a lst_tmp o último e penúltimo itens de lst
-            size = len(lst)
-            if lst[size-1] < 0:
-                lst_tmp.append([lst[size-2], lst[size-1]])
-
-            # O último item é positivo (conteúdo líquido). Acrescenta o último
-            # item e o valor zero (nenhum defeituoso)
-            else:
-                lst_tmp.append([lst[size-1], 0])
-
-        self.measurements_list = lst_tmp
-        return self.measurements_list
+#             self.measurements_list = lst_tmp
+#             return self.measurements_list
 
 
-class ExamReportLength(ExamReport):
-    def __init__(self):
-        super().__init__()
+# class ExamReportVol(ExamReport):
+#     def __init__(self):
+#         super().__init__()
 
-    # Sobrescreve o método 'loadProdData' p/ carregar 'unid_exame', 'T' e
-    # 'valor_min_indiv' que não são carregados na classe pai
-    def loadProdData(self):
+#     # Sobrescreve o método 'loadProdData' p/ carregar 'T' e 'valor_min_indiv'
+#     # que não são carregados na classe pai
+#     def loadProdData(self):
+#         # Chamando o método da classe pai. Em seguida é carregado o que o
+#         # método da classe pai não é capaz de carregar
+#         super().loadProdData()
 
-        # Chamando o método da classe pai. Em seguida é carregado o que o
-        # método da classe pai não é capaz de carregar
-        super().loadProdData()
+#         # T
+#         try:
+#             self._getString2()
+#             string = self._string2
+#             str1 = 'TOLERÂNCIA INDIVIDUAL: '
+#             str2 = ' M'
+#             strT = self._getValueBetweenStrings(string.upper(), str1, str2)
+#             strT = strT.replace(',', '.')
+#             self.T = float(strT)
+#         except Exception:
+#             self.T = None
 
-        # unid_exame
-        self._getString3()
-        string = self._string3
-        str_un_ex = self._getValueBetweenStrings(
-            string.upper(),
-            'VALOR MÍN. ACEITÁVEL: ',
-            '\nRESULTADO'
-        )
-        lst_un_ex = str_un_ex.split(' ')
-        self.unit_exam = lst_un_ex[1].lower()
+#         # valor_min_indiv (Qn - T)
+#         try:
+#             self._getString3()
+#             string = self._string3
+#             str1 = 'VALOR MÍN. INDIVIDUAL: '
+#             str2 = ' ML'
+#             strV = self._getValueBetweenStrings(string.upper(), str1, str2)
+#             strV = strV.replace(',', '.')
+#             self.min_individual_value = float(strV)
+#         except Exception:
+#             self.min_individual_value = None
 
-        # T
-        self._getString2()
-        string = self._string2
-        str1 = 'TOLERÂNCIA INDIVIDUAL: '
-        str2 = ' CM'
-        try:
-            strT = self._getValueBetweenStrings(string.upper(), str1, str2)
-        except Exception:
-            strT = self._getValueBetweenStrings(string.upper(), str1, ' MM')
-        strT = strT.replace(',', '.')
-        self.T = float(strT)
+#         # Chamando método da classe pai para carregar os valores
+#         # 'valor_erro_T3' e 'total_T3'
+#         super()._getT3Values()
 
-        # valor_min_indiv (Qn - T)
-        self._getString3()
-        string = self._string3
-        str1 = 'VALOR MÍN. ACEITÁVEL: '
-        str2 = ' CM'
-        try:
-            strV = self._getValueBetweenStrings(string.upper(), str1, str2)
-        except Exception:
-            strV = self._getValueBetweenStrings(string.upper(), str1, ' MM')
-        strV = strV.replace(',', '.')
-        self.min_individual_value = float(strV)
+#     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
+#     #  das strings
+#     def _getListaMedicoes(self):
+#         # Carregando 'lista_medicoes' com o método da classe pai
+#         super()._getListaMedicoes()
 
-        # Chamando método da classe pai para carregar os valores
-        # 'valor_erro_T3' e 'total_T3'
-        super()._getT3Values()
+#         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
+#         rows = self.measurements_list
+#         lst_tmp = []
 
-    # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
-    # das strings
-    def _getListaMedicoes(self):
-        # Carregando 'lista_medicoes' com o método da classe pai
-        super()._getListaMedicoes()
+#         # Varrendo rows
+#         for row in rows:
 
-        # Atribuindo lista_medicoes 'bruta' à lista 'rows'
-        rows = self.measurements_list
-        lst_tmp = []
+#             # Atribuindo row a lst sem o índice (unidade amostral)
+#             lst = row.split(' ')[1:]
 
-        # Varrendo rows
-        for row in rows:
+#             # Subsituindo as vírgulas das strings por ponto
+#             lst = [x.replace(',', '.') for x in lst]
 
-            # Atribuindo row a lst sem o índice (unidade amostral)
-            lst = row.split(' ')[1:]
+#             # Transformando todas as strings em float
+#             lst = [float(x) for x in lst]
 
-            # Subsituindo as vírgulas das strings por ponto
-            lst = [x.replace(',', '.') for x in lst]
+#             # Se o último item de lst for negativo (nº defeituosos), atribui
+#             #  a lst_tmp o último e penúltimo itens de lst
+#             size = len(lst)
+#             if lst[size-1] < 0:
+#                 lst_tmp.append([lst[size-2], lst[size-1]])
 
-            # Transformando todas as strings em float
-            lst = [float(x) for x in lst]
+#             # O último item é positivo (conteúdo líquido). Acrescenta o último
+#             # item e o valor zero (nenhum defeituoso)
+#             else:
+#                 lst_tmp.append([lst[size-1], 0])
 
-            # Se o último item de lst for negativo (nº defeituosos), atribui
-            # a lst_tmp o último e penúltimo itens de lst
-            size = len(lst)
-            if lst[size-1] < 0:
-                lst_tmp.append([lst[size-2], lst[size-1]])
-
-            # O último item é positivo (medição). Acrescenta o último item e
-            # o valor zero (nenhum defeituoso)
-            else:
-                lst_tmp.append([lst[size-1], 0])
-
-        self.measurements_list = lst_tmp
-        return self.measurements_list
+#         self.measurements_list = lst_tmp
+#         return self.measurements_list
 
 
-class ExamReportUnit(ExamReport):
-    def __init__(self):
-        super().__init__()
+# class ExamReportLength(ExamReport):
+#     def __init__(self):
+#         super().__init__()
 
-    @classmethod
-    def from_parent(cls, parent_instance):
-        # Creates a new instance of the child class without going through the standard __init__ process
-        child = cls()
+#     # Sobrescreve o método 'loadProdData' p/ carregar 'unid_exame', 'T' e
+#     # 'valor_min_indiv' que não são carregados na classe pai
+#     def loadProdData(self):
+
+#         # Chamando o método da classe pai. Em seguida é carregado o que o
+#         # método da classe pai não é capaz de carregar
+#         super().loadProdData()
+
+#         # unid_exame
+#         self._getString3()
+#         string = self._string3
+#         str_un_ex = self._getValueBetweenStrings(
+#             string.upper(),
+#             'VALOR MÍN. ACEITÁVEL: ',
+#             '\nRESULTADO'
+#         )
+#         lst_un_ex = str_un_ex.split(' ')
+#         self.unit_exam = lst_un_ex[1].lower()
+
+#         # T
+#         self._getString2()
+#         string = self._string2
+#         str1 = 'TOLERÂNCIA INDIVIDUAL: '
+#         str2 = ' CM'
+#         try:
+#             strT = self._getValueBetweenStrings(string.upper(), str1, str2)
+#         except Exception:
+#             strT = self._getValueBetweenStrings(string.upper(), str1, ' MM')
+#         strT = strT.replace(',', '.')
+#         self.T = float(strT)
+
+#         # valor_min_indiv (Qn - T)
+#         self._getString3()
+#         string = self._string3
+#         str1 = 'VALOR MÍN. ACEITÁVEL: '
+#         str2 = ' CM'
+#         try:
+#             strV = self._getValueBetweenStrings(string.upper(), str1, str2)
+#         except Exception:
+#             strV = self._getValueBetweenStrings(string.upper(), str1, ' MM')
+#         strV = strV.replace(',', '.')
+#         self.min_individual_value = float(strV)
+
+#         # Chamando método da classe pai para carregar os valores
+#         # 'valor_erro_T3' e 'total_T3'
+#         super()._getT3Values()
+
+#     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
+#     # das strings
+#     def _getListaMedicoes(self):
+#         # Carregando 'lista_medicoes' com o método da classe pai
+#         super()._getListaMedicoes()
+
+#         # Atribuindo lista_medicoes 'bruta' à lista 'rows'
+#         rows = self.measurements_list
+#         lst_tmp = []
+
+#         # Varrendo rows
+#         for row in rows:
+
+#             # Atribuindo row a lst sem o índice (unidade amostral)
+#             lst = row.split(' ')[1:]
+
+#             # Subsituindo as vírgulas das strings por ponto
+#             lst = [x.replace(',', '.') for x in lst]
+
+#             # Transformando todas as strings em float
+#             lst = [float(x) for x in lst]
+
+#             # Se o último item de lst for negativo (nº defeituosos), atribui
+#             # a lst_tmp o último e penúltimo itens de lst
+#             size = len(lst)
+#             if lst[size-1] < 0:
+#                 lst_tmp.append([lst[size-2], lst[size-1]])
+
+#             # O último item é positivo (medição). Acrescenta o último item e
+#             # o valor zero (nenhum defeituoso)
+#             else:
+#                 lst_tmp.append([lst[size-1], 0])
+
+#         self.measurements_list = lst_tmp
+#         return self.measurements_list
+
+
+# class ExamReportUnit(ExamReport):
+#     def __init__(self):
+#         super().__init__()
+
+#     @classmethod
+#     def from_parent(cls, parent_instance):
+#         # Creates a new instance of the child class without going through the standard __init__ process
+#         child = cls()
 
         
-        for key, value in parent_instance.__dict__.items():
-            setattr(child, key, copy.deepcopy(value))
+#         for key, value in parent_instance.__dict__.items():
+#             setattr(child, key, copy.deepcopy(value))
             
-        # 3. Entregamos o objeto filho pronto para uso.
-        return child
+#         # 3. Entregamos o objeto filho pronto para uso.
+#         return child
 
-    # Sobrescreve o método 'loadProdData' p/ carregar 'marca_prod', 'qn_prod',
-    # 'unid_prod', 'T' e 'valor_min_indiv' que não são carregados na classe pai
-    def loadProdData(self):
-        self._getString1()
-        string = self._string1
+#     # Sobrescreve o método 'loadProdData' p/ carregar 'marca_prod', 'qn_prod',
+#     # 'unid_prod', 'T' e 'valor_min_indiv' que não são carregados na classe pai
+#     def loadProdData(self):
+#         self._getString1()
+#         string = self._string1
 
-        # Chamando o método da classe pai. Em seguida é carregado o que o
-        # método da classe pai não é capaz de carregar
-        super().loadProdData()
+#         # Chamando o método da classe pai. Em seguida é carregado o que o
+#         # método da classe pai não é capaz de carregar
+#         super().loadProdData()
 
-        # marca_prod
-        self.product_brand = self._getValueBetweenStrings(
-            string.upper(),
-            'MARCA: ',
-            '\nCONTEÚDO NOMINAL'
-        )
+#         # marca_prod
+#         self.product_brand = self._getValueBetweenStrings(
+#             string.upper(),
+#             'MARCA: ',
+#             '\nCONTEÚDO NOMINAL'
+#         )
 
-        # qn_prod
-        str_qn = self._getValueBetweenStrings(
-            string.upper(),
-            'CONTEÚDO NOMINAL (QN):',
-            '\nTEMPERATURA'
-        ).lower()
-        lst_qn = str_qn.split(' ')
-        self.qn_product = lst_qn[0]
+#         # qn_prod
+#         str_qn = self._getValueBetweenStrings(
+#             string.upper(),
+#             'CONTEÚDO NOMINAL (QN):',
+#             '\nTEMPERATURA'
+#         ).lower()
+#         lst_qn = str_qn.split(' ')
+#         self.qn_product = lst_qn[0]
 
-        # unid_prod
-        self.unit_product = 'un.'
+#         # unid_prod
+#         self.unit_product = 'un.'
 
-        # T
-        self._getString2()
-        string = self._string2
-        str1 = 'TOLERÂNCIA INDIVIDUAL: '
-        str2 = ' UN.'
-        strT = self._getValueBetweenStrings(string.upper(), str1, str2)
-        self.T = int(strT)
+#         # T
+#         self._getString2()
+#         string = self._string2
+#         str1 = 'TOLERÂNCIA INDIVIDUAL: '
+#         str2 = ' UN.'
+#         strT = self._getValueBetweenStrings(string.upper(), str1, str2)
+#         self.T = int(strT)
 
-        # valor_min_indiv (Qn - T)
-        self._getString3()
-        string = self._string3
-        str1 = 'VALOR MÍN. INDIVIDUAL: '
-        str2 = ' UN.'
-        self.min_individual_value = int(self._getValueBetweenStrings(
-            string.upper(),
-            str1,
-            str2)
-        )
+#         # valor_min_indiv (Qn - T)
+#         self._getString3()
+#         string = self._string3
+#         str1 = 'VALOR MÍN. INDIVIDUAL: '
+#         str2 = ' UN.'
+#         self.min_individual_value = int(self._getValueBetweenStrings(
+#             string.upper(),
+#             str1,
+#             str2)
+#         )
 
-        # Chamando método da classe pai para carregar os valores
-        # 'valor_erro_T3' e 'total_T3'
-        super()._getT3Values()
+#         # Chamando método da classe pai para carregar os valores
+#         # 'valor_erro_T3' e 'total_T3'
+#         super()._getT3Values()
 
-    # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
-    # das strings
-    def _getListaMedicoes(self):
-        data = self.list_raw_data
-        linhas_com_medicoes = False
+#     # Sobrescreve _getListaMedicoes() da classe pai para extrair os dados
+#     # das strings
+#     def _getListaMedicoes(self):
+#         data = self.list_raw_data
+#         linhas_com_medicoes = False
 
-        for row in data:
-            if row[0] is not None and 'Valor da menor unidade:' in row[0]:
-                linhas_com_medicoes = False
-            if row[0] is not None and 'Observação' in row[0]:
-                linhas_com_medicoes = False
-            if row[0] is not None and 'Observações' in row[0]:
-                linhas_com_medicoes = False
-            if row[0] is not None and 'Produto: ' in row[0]:
-                linhas_com_medicoes = False
-            if linhas_com_medicoes:  # and row[1] is not None and len(row[1]) > 0:
-                # Retirando todos os elementos nulos das linhas
-                while None in row:
-                    row.remove(None)
-                # Retirando todos os elementos de strings vazias das linhas
-                while '' in row:
-                    row.remove('')
-                # Transformando todos os elementos de row em inteiros
-                row = [int(x) for x in row]
+#         for row in data:
+#             if row[0] is not None and 'Valor da menor unidade:' in row[0]:
+#                 linhas_com_medicoes = False
+#             if row[0] is not None and 'Observação' in row[0]:
+#                 linhas_com_medicoes = False
+#             if row[0] is not None and 'Observações' in row[0]:
+#                 linhas_com_medicoes = False
+#             if row[0] is not None and 'Produto: ' in row[0]:
+#                 linhas_com_medicoes = False
+#             if linhas_com_medicoes:  # and row[1] is not None and len(row[1]) > 0:
+#                 # Retirando todos os elementos nulos das linhas
+#                 while None in row:
+#                     row.remove(None)
+#                 # Retirando todos os elementos de strings vazias das linhas
+#                 while '' in row:
+#                     row.remove('')
+#                 # Transformando todos os elementos de row em inteiros
+#                 row = [int(x) for x in row]
 
-            # row tem 3 itens (índice, cont. efet. e cont. efet.)
-            if len(row) == 3:
-                self.measurements_list.append(row[2:] + [0])
-            # row tem 4 itens  (índice, cont. efet., cont. efet., n.º defeit.)
-            elif len(row) == 4:
-                self.measurements_list.append(row[2:])
-            if row[0] is not None and 'UNIDADE AMOSTRAL' in str(row[0]).upper():
-                linhas_com_medicoes = True
+#             # row tem 3 itens (índice, cont. efet. e cont. efet.)
+#             if len(row) == 3:
+#                 self.measurements_list.append(row[2:] + [0])
+#             # row tem 4 itens  (índice, cont. efet., cont. efet., n.º defeit.)
+#             elif len(row) == 4:
+#                 self.measurements_list.append(row[2:])
+#             if row[0] is not None and 'UNIDADE AMOSTRAL' in str(row[0]).upper():
+#                 linhas_com_medicoes = True
 
-        return self.measurements_list
+#         return self.measurements_list
