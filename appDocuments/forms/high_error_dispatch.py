@@ -62,8 +62,8 @@ class HighErrorDispatchForm(forms.Form):
             if valid_file is False:
                 list_invalid_pdfs.append(pdf_file.name)
         if len(list_invalid_pdfs) > 0:
-            msg = f'Arquivo(s) inválido(s) encontrado(s): {', '.join(list_invalid_pdfs)}. '
-            msg += 'Tente novamente sem esse(s) arquivo(s)'
+            msg = f"Arquivo(s) inválido(s) encontrado(s): {', '.join(list_invalid_pdfs)}. "
+            msg += "Tente novamente sem esse(s) arquivo(s)"
             self.errors_fields['dispatch_pdf'].append(msg)
 
         if self.errors_fields:
