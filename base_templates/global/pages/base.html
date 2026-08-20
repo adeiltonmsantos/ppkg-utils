@@ -12,8 +12,9 @@
     </div>
     <div class="main-container container">
         <div class="user-data-container">
-            {% if user != 'AnonymousUser' %}
-                Bem vindo(a) {{ user }}
+            {% if user.username != '' %}
+                Bem vindo(a) {{ user }}&nbsp;&nbsp;
+                {% include "global/partials/logout.html" %}
             {% endif %}
         </div>
         {% block content %}{% endblock content %}

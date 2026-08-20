@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin  # type: ignore
+from django.contrib.auth import views as auth_views
 from django.urls import include, path  # type: ignore
 
 from appDocuments.views import HomeView
@@ -10,6 +11,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('documents/', include('appDocuments.urls')),
     path('users/', include('appUsers.urls')),
+    path(
+        'logout/',
+        auth_views.LogoutView.as_view(
+            next_page='appUsers:login'
+        ),
+        name='logout'
+    ),
 ]
 
 urlpatterns += static(

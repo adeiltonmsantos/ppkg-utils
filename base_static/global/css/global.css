@@ -163,6 +163,15 @@ select{
 }
 
 
+/* Form for logout*/
+.form-logout button{
+    background-color: none;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+
 /* Form for IPEM printing data */
 .img_ipem_data{
     height: 5rem;

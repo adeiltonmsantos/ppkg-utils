@@ -13,5 +13,5 @@ urlpatterns = [
             authentication_form=CustomLoginForm
         ),
         name='login'
-    )
+    ),
 ]
