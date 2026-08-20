@@ -12,7 +12,9 @@
     </div>
     <div class="main-container container">
         <div class="user-data-container">
-            Bem vindo(a) {{ user }}
+            {% if user != 'AnonymousUser' %}
+                Bem vindo(a) {{ user }}
+            {% endif %}
         </div>
         {% block content %}{% endblock content %}
     </div>
