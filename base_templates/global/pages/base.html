@@ -9,6 +9,19 @@
             <img src="{% static "global/img/logo-agreement.png" %}" alt="Logo convênio IPEM/INMETRO">
             <h1>PPKG-UTILS</h1>
         </div>
+        <div class="menu-main-container">
+            <img src="{{MEDIA_URL}}menu-icon.png" alt="">
+            <input type="hidden" id="items" data-spr="{% if user.is_superuser %}1{% else %}0{% endif %}" value="{% static "global/js/menu_items.json" %}">
+            {% if user.username != '' %}
+                <div class="menu-container">
+                    <ul>
+                        <li>ALTERAR SENHA</li>
+                        <li>FERRAMENTAS PARA PROCESSOS</li>
+                        <li>SAIR</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
     </div>
     <div class="main-container container">
         <div class="user-data-container">
@@ -19,6 +32,7 @@
         </div>
         {% block content %}{% endblock content %}
     </div>
+    <script src="{% static "global/js/menu.js" %}"></script>
 </body>
 
 </html>

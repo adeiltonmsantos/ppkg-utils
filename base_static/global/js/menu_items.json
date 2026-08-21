@@ -1,0 +1,36 @@
+[
+    {
+        "text": "ALTERAR MINHA SENHA",
+        "url": "",
+        "profile_super": 0
+    },
+    {
+        "text": "CADASTRO DE USUÁRIOS",
+        "url": "",
+        "profile_super": 1
+    },
+    {
+        "text": "FERRAMENTAS PARA PROCESSOS",
+        "url": [
+            {
+                "text": "COMPACTAR PDF's",
+                "url": "",
+                "profile_super": 0
+            },
+            {
+                "text": "JUNTAR PDF's",
+                "url": "",
+                "profile_super": 0
+            },
+            {
+                "text": "CONVERTER IMAGEM PARA PDF",
+                "url": "",
+                "profile_super": 0
+            }
+        ]
+    },
+    {
+        "text": "SAIR",
+        "url": ""
+    }
+]

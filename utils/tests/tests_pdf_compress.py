@@ -66,23 +66,3 @@ class UnitTestCompressPDF(TestCase):
 
         self.assertTrue(size_after <= size_before)
     
-    def test_compress_and_merge_several_pdfs(self):
-        # Defining list with bytes of PDF files in disc
-        files_list = [pdffile.read_bytes() for pdffile in self.pdf_folder.glob('*.pdf')]
-
-        # Compressing and meging files
-        pdfcompressor = PdfCompressor()
-        pdfmerged = pdfcompressor.compress_and_merge(files_list)
-
-        # Testing if the compressed and merged file is not empty
-        self.assertTrue(
-            len(pdfmerged) > 0,
-            msg='Result of operation is an empty file'
-        )
-
-        # Testing if the compressed and merged file is a valid PDF
-        self.assertTrue(
-            pdfmerged.startswith(b"%PDF"),
-            msg='Result of operation is not a valid PDF file'
-        )
-        

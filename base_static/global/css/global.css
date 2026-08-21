@@ -38,6 +38,7 @@ input, select{
     background-color: #07053A;
     height: var(--header-footer-height), Arial;
     display: flex;
+    justify-content: space-between;
     padding: 1rem 3.5rem;
 }
 
@@ -56,6 +57,37 @@ input, select{
     font-weight: normal;
     color: #fff;
     font-family: var(--font-title);
+}
+
+.menu-main-container{
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 5;
+}
+
+.menu-container{
+    background-color: #E5E4FF;
+    display: none;
+    gap: 1rem;
+    position: absolute;
+    width: fit-content;
+    right: 0;
+    top: 7.2rem;
+    border-radius: 2rem 0 2rem 2rem;
+    padding: 2rem;
+}
+
+.menu-container ul li{
+    list-style-type: none;
+    padding: 0.5rem 0;
+    white-space: nowrap;
+}
+
+.menu-main-container img{
+    height: 2.2rem;
+    width: 2.7rem;
+    cursor: pointer;
 }
 
 /* Main container */
