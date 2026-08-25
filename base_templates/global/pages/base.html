@@ -13,12 +13,7 @@
             <img src="{{MEDIA_URL}}menu-icon.png" alt="">
             <input type="hidden" id="items" data-spr="{% if user.is_superuser %}1{% else %}0{% endif %}" value="{% static "global/js/menu_items.json" %}">
             {% if user.username != '' %}
-                <div class="menu-container">
-                    <ul>
-                        <li>ALTERAR SENHA</li>
-                        <li>FERRAMENTAS PARA PROCESSOS</li>
-                        <li>SAIR</li>
-                    </ul>
+                <div class="menu-container hidden">
                 </div>
             {% endif %}
         </div>

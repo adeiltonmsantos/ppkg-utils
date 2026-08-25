@@ -67,8 +67,8 @@ input, select{
 }
 
 .menu-container{
-    background-color: #E5E4FF;
-    display: none;
+    background-color: #b4dfff;
+    flex-direction: column;
     gap: 1rem;
     position: absolute;
     width: fit-content;
@@ -76,6 +76,25 @@ input, select{
     top: 7.2rem;
     border-radius: 2rem 0 2rem 2rem;
     padding: 2rem;
+}
+
+.hidden{
+    display: none;
+}
+
+.visible-collum{
+    display: flex;
+    flex-direction: column;
+}
+
+.visible-row{
+    display: flex;
+    flex-direction: row;
+}
+
+.menu-container h1{
+    border-bottom: 1px solid #414141;
+    font-size: 1.5rem;
 }
 
 .menu-container ul li{

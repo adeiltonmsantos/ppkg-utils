@@ -1,36 +1,57 @@
 [
+    
     {
-        "text": "ALTERAR MINHA SENHA",
-        "url": "",
-        "profile_super": 0
-    },
-    {
-        "text": "CADASTRO DE USUÁRIOS",
-        "url": "",
-        "profile_super": 1
-    },
-    {
-        "text": "FERRAMENTAS PARA PROCESSOS",
-        "url": [
+        "id": "main",
+        "label": "HOME",
+        "profile_super": 0,
+        "previous": "main",
+        "items": [
             {
-                "text": "COMPACTAR PDF's",
+                "label": "ALTERAR MINHA SENHA",
                 "url": "",
                 "profile_super": 0
             },
             {
-                "text": "JUNTAR PDF's",
+                "label": "CADASTRO DE USUÁRIOS",
+                "url": "",
+                "profile_super": 1
+            },
+            {
+                "label": "FERRAMENTAS PARA PROCESSOS",
                 "url": "",
                 "profile_super": 0
             },
             {
-                "text": "CONVERTER IMAGEM PARA PDF",
+                "label": "SAIR",
                 "url": "",
                 "profile_super": 0
             }
         ]
     },
     {
-        "text": "SAIR",
-        "url": ""
+        "id": "prct",
+        "label": "FERRAMENTAS PARA PROCESSOS",
+        "profile_super": 0,
+        "previous": "main",
+        "items": [
+            {
+                "label": "COMPACTAR PDF's",
+                "url": "",
+                "profile_super": 0,
+                "previous": "main"
+            },
+            {
+                "label": "JUNTAR PDF's",
+                "url": "",
+                "profile_super": 0,
+                "previous": "main"
+            },
+            {
+                "label": "CONVERTER IMAGEM PARA PDF",
+                "url": "",
+                "profile_super": 0,
+                "previous": "main"
+            }
+        ]
     }
 ]
