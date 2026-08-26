@@ -93,7 +93,15 @@
 
         <div class="form-controls">
             <button type="submit" class="form-btn">Salvar</button>
-            <button type="reset" class="form-btn">Cancelar</button>
+            <button 
+                type="submit"
+                class="form-btn"
+                formaction="{% url "home" %}"
+                formmethod="get"
+                formnovalidate
+            >
+                Cancelar
+            </button>
         </div>
         {% if form.errors %}
             <p class="error-message-form center">
