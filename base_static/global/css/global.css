@@ -101,6 +101,22 @@ input, select{
     list-style-type: none;
     padding: 0.5rem 0;
     white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+}
+
+.menu-container ul a{
+    text-decoration: none;
+    color: #07053A;
+}
+
+.menu-container h1, .menu-container ul li{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.menu-container ul li:hover{
+    background-color: #ffffff80;
 }
 
 .menu-main-container img{
