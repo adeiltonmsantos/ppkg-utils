@@ -10,7 +10,7 @@
             <h1>PPKG-UTILS</h1>
         </div>
         <div class="menu-main-container">
-            <img src="{{MEDIA_URL}}menu-icon.png" alt="">
+            <img src="{% static "global/img/menu-icon.png" %}" alt="">
             <input type="hidden" id="items" data-spr="{% if user.is_superuser %}1{% else %}0{% endif %}" value="{% static "global/js/menu_items.json" %}">
             {% if user.username != '' %}
                 <div class="menu-container hidden">
