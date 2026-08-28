@@ -19,6 +19,9 @@
         </div>
     </div>
     <div class="main-container container">
+        {% if messages %}
+        
+        {% endif %}
         <div class="user-data-container">
             {% if user.username != '' %}
                 Bem vindo(a) {{ user }}&nbsp;&nbsp;

@@ -28,7 +28,43 @@ class UserRegistrationForm(UserCreationForm):
     nome = forms.CharField(
         max_length=150,
         required=True,
-        label='Nome'
+        label='Nome',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-text-input',
+                'placeholder': 'Digite seu nome completo'
+            }
+        )
+    )
+    # Overwriting username, password1 and passrowd2 to define CSS class
+    username = forms.CharField(
+        label='Login',
+        widget=forms.TextInput(
+            attrs={
+                'class': 'form-text-input',
+                'placeholder': 'Digite seu login sem espaços ou caracteres especiais'
+            }
+        )
+    )
+
+    password1 = forms.CharField(
+        label='Senha',
+        widget=forms.PasswordInput(
+            attrs={
+                'class': 'form-text-input',
+                'placeholder': 'Digite sua senha de pelo menos 8 caracteres'
+            }
+        )
+    )
+
+    password2 = forms.CharField(
+        label='Confirmar Senha',
+        widget=forms.PasswordInput(
+            attrs={
+                'class': 'form-text-input',
+                'placeholder': 'Confirme sua senha de pelo menos 8 caracteres'
+            }
+        )
     )
 
     class Meta(UserCreationForm.Meta):
@@ -37,7 +73,7 @@ class UserRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.cleaned_data['nome']
+        user.first_name = self.cleaned_data['nome']
         if commit:
             user.save()
         return user
