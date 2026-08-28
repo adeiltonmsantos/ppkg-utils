@@ -14,4 +14,9 @@ urlpatterns = [
         ),
         name='login'
     ),
+    path(
+        'user_registration',
+        lambda x: x,
+        name='user_registration'
+    ),
 ]

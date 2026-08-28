@@ -11,3 +11,12 @@ class appUsersUrlTest(SimpleTestCase):
             url_wanted,
             msg=f'URL expected is "{url_wanted}" but "{url}" was found'
         )
+
+    def test_appUsers_user_registration_is_correct(self):
+        url = reverse('appUsers:user_registration')
+        url_wanted = '/users/user_registration'
+        self.assertEqual(
+            url,
+            url_wanted,
+            msg=f'URL expected is "{url_wanted}" but "{url}" was found'
+        )
