@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
 
 
 class CustomLoginForm(AuthenticationForm):
@@ -21,3 +22,22 @@ class CustomLoginForm(AuthenticationForm):
             }
         )
     )
+
+class UserRegistrationForm(UserCreationForm):
+    # Defining 'nome' field to form
+    nome = forms.CharField(
+        max_length=150,
+        required=True,
+        label='Nome'
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ('nome', 'username')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.cleaned_data['nome']
+        if commit:
+            user.save()
+        return user
