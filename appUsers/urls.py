@@ -2,6 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path  # type: ignore
 
 from .forms import CustomLoginForm
+from .views import UserRegistrationView
 
 app_name = 'appUsers'
 
@@ -16,7 +17,7 @@ urlpatterns = [
     ),
     path(
         'user_registration',
-        lambda x: x,
+        UserRegistrationView.as_view(),
         name='user_registration'
     ),
 ]
