@@ -20,6 +20,11 @@ JSON_PATH = settings.JSON_IPEM_DATA_PATH
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'global/pages/base.html'
 
+    def get_context_data(self, *args, **kwargs):
+        cnt = super().get_context_data(**kwargs)
+        cnt['title_page'] = 'Home'
+        return cnt
+
 
 class IpemData(LoginRequiredMixin, View):
 
@@ -37,6 +42,7 @@ class IpemData(LoginRequiredMixin, View):
                 'form': form,
                 'form_data': form_data,
                 'title_form': 'DADOS CADASTRAIS DO IPEM',
+                'title_page': 'Dados Cadastrais do IPEM',
                 'path_brasao': path_brasao,
                 'path_convenio': path_convenio,
                 'path_assinatura': path_assinatura,

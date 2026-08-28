@@ -23,6 +23,7 @@ class HighErrorDispatch(LoginRequiredMixin, View):
                 'form': form,
                 'form_data': form_data,
                 'title_form': 'DESPACHO PARA ERROS ELEVADOS',
+                'title_page': 'Despacho Para Erros Elevados',
                 'dispatch_url': dispatch_url,
             }
         )

@@ -27,7 +27,8 @@ class UploadExamSchedule(LoginRequiredMixin, FormView):
             'appDocuments/pages/edit_uploaded_exam_schedule.html',
             context={
                 'data': data,
-                'title_form': 'Validação de Cronograma de Perícias'
+                'title_page': 'Upload Cronograma',
+                'title_form': 'Validação de Cronograma de Perícias',
             }
         )
 
@@ -40,5 +41,6 @@ class EditExamSchedule(LoginRequiredMixin, FormView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title_form'] = 'Validação de Cronograma de Perícias'
+        context['title_page'] = 'Validação de Cronograma de Perícias'
         return context
 
