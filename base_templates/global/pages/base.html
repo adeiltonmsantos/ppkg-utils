@@ -19,17 +19,19 @@
         </div>
     </div>
     <div class="main-container container">
-        {% if messages %}
-            <div class="flash-message-container">
-                {{ messages }}
-            </div>
-        {% endif %}
         <div class="user-data-container">
             {% if user.username != '' %}
                 Bem vindo(a) {{ user }}&nbsp;&nbsp;
                 {% include "global/partials/logout.html" %}
             {% endif %}
         </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message-container {{message.tags}}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
         {% block content %}{% endblock content %}
     </div>
     <script src="{% static "global/js/menu.js" %}"></script>
