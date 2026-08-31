@@ -20,7 +20,9 @@
     </div>
     <div class="main-container container">
         {% if messages %}
-        
+            <div class="flash-message-container">
+                {{ messages }}
+            </div>
         {% endif %}
         <div class="user-data-container">
             {% if user.username != '' %}

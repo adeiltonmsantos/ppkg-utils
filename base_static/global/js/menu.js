@@ -84,15 +84,31 @@ document.addEventListener('DOMContentLoaded', function(){
 
         })
 
-        // Defining next menu item of whole menu container
-        liMenu = document.createElement('li')
-        liMenu.append('VOLTAR')
-        // Defining attribute 'data-type-item' as 'menu'
-        liMenu.setAttribute('data-type-item', 'menu')
-        // Defining attribute 'data-next-item'
-        liMenu.setAttribute('data-next-item', menu.previous)
-        // Adding menu item to menu container
-        ulMenu.appendChild(liMenu)
+        
+        // Defining 'VOLTAR AO INÍCIO' item if menu item isn't 'main'
+        if (menu.id != 'main'){
+            // Defining next menu item of whole menu container
+            liMenu = document.createElement('li')
+            liMenu.append('VOLTAR')
+            // Defining attribute 'data-type-item' as 'menu'
+            liMenu.setAttribute('data-type-item', 'menu')
+            // Defining attribute 'data-next-item'
+            liMenu.setAttribute('data-next-item', menu.previous)
+            // Adding menu item to menu container
+            ulMenu.appendChild(liMenu)
+
+            // Defining HOME option
+            liMenu = document.createElement('li')
+            liMenu.append('VOLTAR AO INÍCIO')
+            // Defining attribute 'data-type-item' as 'menu'
+            liMenu.setAttribute('data-type-item', 'menu')
+            // Defining attribute 'data-next-item'
+            liMenu.setAttribute('data-next-item', 'main')
+            // Adding menu item to menu container
+            ulMenu.appendChild(liMenu)
+        }
+
+
 
     }
 
