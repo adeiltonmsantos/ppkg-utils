@@ -175,6 +175,15 @@ input, select{
     flex-direction: column;
 }
 
+.form-field-collumn ul li{
+    margin-left: 1.3rem;
+}
+
+.form-field-collumn ul li a{
+    text-decoration: none;
+    color: #0d0971;
+}
+
 .form-field-row{
     flex-direction: row;
     align-items: center;

@@ -28,7 +28,7 @@
                 </div>
             {% endfor %}
             <div class="form-controls">
-                <button type="submit" class="form-btn">Salvar</button>
+                <button type="submit" class="form-btn">Enviar</button>
                 <button type="button" id="btn_reset" class="form-btn" data-url="{% url 'home' %}">Cancelar</button>
             </div>
             {% if form.errors %}
@@ -48,7 +48,7 @@
                     <h3>Arquivos Compactados</h3>
                     <ul>
                     {% for file in compressed_files_list %}
-                        <li><a href="{{ file.url }}" download="{{ file.name }}">{{file.name}}&nbsp;&nbsp;({{ file.size|floatformat:2 }}MB)</a></li>
+                        <li>{{file.name}}&nbsp;&nbsp;({{ file.size|floatformat:2 }}MB)&nbsp;&nbsp;<a href="{{ file.url }}" download="{{ file.name }}">[baixar]</a></li>
                     {% endfor %}
                     </ul>
                 </div>
