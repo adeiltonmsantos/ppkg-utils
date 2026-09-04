@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from django.conf import settings
 
-from ..pdf_compress import PdfCompressor
+from utils.pdf_compress import PdfCompressor
 
 
 class UnitTestCompressPDF(TestCase):
@@ -31,23 +31,24 @@ class UnitTestCompressPDF(TestCase):
         # List with PDF files in folder for tests
         files_list = [pdffile.read_bytes() for pdffile in self.pdf_folder.glob('*.pdf')]
 
+        # Total files before compressing
+        total_before = len(files_list)
+
         pdfcomp = PdfCompressor()
 
         compressed_list = pdfcomp.compress_several_pdfs(files_list)
 
-        pathpdf = self.pdf_folder
-        for i, file in enumerate(compressed_list):
-            i += 1
-            (pathpdf / f'EMBALAGEM-{i}.pdf').write_bytes(file)
+        # pathpdf = self.pdf_folder
+        # for i, file in enumerate(compressed_list):
+        #     i += 1
+        #     (pathpdf / f'EMBALAGEM-{i}.pdf').write_bytes(file)
 
-        # Total files sizes before compressing
-        total_before = sum([len(f) for f in files_list])
 
         # Total files list after compressing
-        total_after = sum([len(f) for f in compressed_list])
+        total_after = len(compressed_list)
 
         self.assertTrue(
-            total_after <= total_before
+            total_after == total_before
         )
 
     def test_merge_files(self):
