@@ -81,8 +81,20 @@ class ExamReport:
                 self.list_raw_data.append(tb)
                 # Scanning a table from list_raw_data to get the relevant data
                 for row in self.list_raw_data:
+                    # Getting exam report date
+                    if row[0] is not None and str(row[0]).upper().startswith('LOCAL: '):
+                        try:
+                            self.exam_report_date = row[1].split(' ')[5]
+                        except AttributeError:
+                            self.exam_report_date = row[2].split(' ')[5]
+                    # Getting exame report number
+                    if row[0] is not None and str(row[0]).upper().startswith('EXECUTOR'):
+                        for item in row:
+                            if str(item).upper().startswith('NÚMERO'):
+                                result = item.split(':')
+                                self.exam_report_num = result[1].strip()
                     # Getting T, T3, c, n and exam type
-                    if row[0] is not None and str(row[0]).upper().startswith('TERMO DE COLETA'):
+                    elif row[0] is not None and str(row[0]).upper().startswith('TERMO DE COLETA'):
                         data = [str(item).split('\n') for item in row if item is not None]
                         for item in data[1]:
                             if str(item).startswith('Amostra:'):
@@ -184,7 +196,7 @@ class ExamReport:
                                     if value < self.T3_error_value:
                                         self.total_T3 += 1
                                 except IndexError:
-                                    break
+                                    pass
                             case 'v':
                                 row_data = str(row[0]).split(' ')
                                 try:
@@ -193,7 +205,7 @@ class ExamReport:
                                     if value < self.T3_error_value:
                                         self.total_T3 += 1
                                 except IndexError:
-                                    break
+                                    pass
                             case 'c':
                                 row_data = str(row[0]).split(' ')
                                 try:
@@ -202,7 +214,7 @@ class ExamReport:
                                     if value < self.T3_error_value:
                                         self.total_T3 += 1
                                 except IndexError:
-                                    break
+                                    pass
                             case 'u':
                                 if row[1] != '' and str(row[1]).isnumeric():
                                     value = int(row[1])
@@ -210,8 +222,7 @@ class ExamReport:
                                         self.total_T3 += 1
                                     self.measurements_list.append(value)
                                 else:
-                                    break
-
+                                    pass
 
             str_wanted = ('LAUDO DE EXAME QUANTITATIVO DE PRODUTOS PRÉ-MEDIDOS').replace(' ', '')
             str_found = (self.list_raw_data[0][0]).replace(' ', '')
@@ -257,10 +268,10 @@ class ExamReport:
 
     # Carrega para a propriedade 'string1' a string da qual serão extraídos
     # dados do produto (nome, marca, Qn)
-    def _getString1(self):
-        if self._string1 is None:
-            data = self._getDataByString('Produto: ')
-            self._string1 = data
+    # def _getString1(self):
+    #     if self._string1 is None:
+    #         data = self._getDataByString('Produto: ')
+    #         self._string1 = data
 
     # Carrega para a propriedade 'string2' a string da qual serão extraídos
     # n, c, e T
@@ -532,7 +543,7 @@ class ExamReport:
         txt_erros_start = f'o produto {self.product_name.upper()}, marca {self.product_brand.upper()}, examinad'
         txt_erros_start += f'o em nosso laboratório em {self.exam_report_date} é passível de a'
         txt_erros_start += f'preensão pois referente ao conteúdo nominal {self.qn_product} '
-        txt_erros_start += f'{self.unit_product} determinado no laudo n.º {self.exam_report_num} '
+        txt_erros_start += f' determinado no laudo n.º {self.exam_report_num} '
 
         # String com o texto completo, se houver erros
         txt_erros = ''

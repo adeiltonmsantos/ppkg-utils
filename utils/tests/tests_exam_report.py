@@ -83,6 +83,20 @@ class UnitTestExamReport(TestCase):
         pdf_obj = self.loadExamReportPDF(pdfname)
         er.loadRawData(pdf_obj)
 
+        # Testing date of exam report
+        exam_report_date = er.exam_report_date
+        self.assertIsNotNone(
+            exam_report_date,
+            msg='Exam report date not found'
+        )
+
+        # Testing exam report number
+        exam_report_number = er.exam_report_num
+        self.assertTrue(
+            exam_report_number.isnumeric(),
+            msg='Exam report number not found'
+        )
+
         # Testing exam report type
         exam_type = er.exam_report_type
         self.assertFalse(str(exam_type) == 'None' or str(exam_type) == '')
